@@ -3,62 +3,28 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #1a1208;
+  background: var(--bg);
 }
 
 .hero {
   position: absolute;
-  top: 28%;
+  top: 16%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
   pointer-events: none;
   z-index: 10;
   white-space: nowrap;
-}
-
-/* Pixel-art frame — rectangle with stepped (cut) corners */
-.pixelBox {
-  display: inline-block;
-  position: relative;
-  padding: 22px 52px;
-}
-
-.pixelBox::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 3px solid rgba(255, 255, 255, 0.88);
-  /* Stepped corners give the pixel-art look */
-  clip-path: polygon(
-    10px 0%,  calc(100% - 10px) 0%,
-    100% 10px, 100% calc(100% - 10px),
-    calc(100% - 10px) 100%, 10px 100%,
-    0% calc(100% - 10px), 0% 10px
-  );
-  pointer-events: none;
-}
-
-/* Inner corner dots — reinforce the pixel art frame */
-.pixelBox::after {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  clip-path: polygon(
-    6px 0%,  calc(100% - 6px) 0%,
-    100% 6px, 100% calc(100% - 6px),
-    calc(100% - 6px) 100%, 6px 100%,
-    0% calc(100% - 6px), 0% 6px
-  );
-  pointer-events: none;
+  /* padding defines the protected beige zone around the text —
+     the reveal mask measures this box (data-hero-tag) */
+  padding: 14px 28px;
 }
 
 .title {
   font-size: 2.3rem;
   letter-spacing: 0.10em;
-  color: #ffffff;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75);
+  color: var(--text);
+  text-shadow: 0 1px 12px rgba(247, 242, 228, 0.9);
   font-weight: normal;
 }
 
@@ -67,6 +33,6 @@
   font-size: 0.88rem;
   letter-spacing: 0.30em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.70);
+  color: rgba(30, 28, 22, 0.65);
   font-style: italic;
 }

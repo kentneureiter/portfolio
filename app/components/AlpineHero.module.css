@@ -1,0 +1,51 @@
+/* AlpineHero — layered pixel landscape.
+   z-index stack: sky(1) < mask(3) < mountain(4)
+   < corner clouds(5) < grain(6). Hero text lives above at z:10. */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  cursor: crosshair;
+}
+
+.root canvas {
+  /* position is required — z-index silently fails without it */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.sky      { z-index: 1; }
+.mask     { z-index: 3; }
+.mountain { z-index: 4; }
+
+/* ---- corner cloud puffs: canvas repainted by the component ---- */
+.sea { z-index: 5; }
+
+/* ---- paper grain + vignette ---- */
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  /* fractal noise texture */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+}
+
+/* subtle warm vignette on top of the grain */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 120% 90% at 50% 40%,
+    transparent 60%,
+    rgba(74, 58, 34, 0.10) 100%
+  );
+}
