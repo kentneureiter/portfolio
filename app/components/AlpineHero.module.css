@@ -1,6 +1,7 @@
 /* AlpineHero — layered pixel landscape.
    z-index stack: sky(1) < mask(3) < mountain(4)
-   < corner clouds(5) < grain(6). Hero text lives above at z:10. */
+   < corner clouds(5) < grain(6). Hero text lives above at z:10. 
+   helo*/
 
 .root {
   position: absolute;
