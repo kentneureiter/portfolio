@@ -263,57 +263,6 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
 }
 
 // ============================================================
-// ROCKET — small static rocket in the left sky, baked into the
-// sky layer so it's only visible through the hover reveal.
-// Drawn in rocket-local coords (lx across the hull, ly along
-// it, nose at negative ly) and rotated at draw time so it
-// flies diagonally toward the top center.
-// Parts: nose cone, hull with porthole, fins, nozzle, and a
-// dithered exhaust flame.
-// ============================================================
-function rocketCell(lx: number, ly: number, x: number, y: number): string | null {
-  const r = hash2(x * 13 + 101, y * 17 + 57)
-  const ax = Math.abs(lx)
-  // nose cone: tapers to a point, lit from the left
-  if (ly >= -6.5 && ly < -3.8) {
-    const w = 1.7 * (ly + 6.5) / 2.7
-    if (ax <= w) return lx < 0 ? '#f4f6f8' : (r < 0.6 ? '#d7dbe2' : '#aab0bb')
-    return null
-  }
-  // hull + fins
-  if (ly >= -3.8 && ly < 2.0) {
-    if (ax <= 1.7) {
-      // porthole
-      const wd = Math.sqrt(lx * lx + (ly + 2.2) * (ly + 2.2))
-      if (wd < 1.0) return r < 0.25 ? '#9aa2af' : '#2a2e36'
-      // left-lit shading across the hull
-      if (lx < -0.6) return r < 0.7 ? '#f4f6f8' : '#d7dbe2'
-      if (lx > 0.9) return r < 0.7 ? '#6b7280' : '#aab0bb'
-      return r < 0.75 ? '#d7dbe2' : '#aab0bb'
-    }
-    // fins flaring out near the tail
-    if (ly > 0.2) {
-      const fw = 1.7 + (ly - 0.2) * 1.0
-      if (ax <= fw) return r < 0.55 ? '#454b56' : '#2a2e36'
-    }
-    return null
-  }
-  // nozzle
-  if (ly >= 2.0 && ly < 2.9 && ax <= 1.0) return '#2a2e36'
-  // exhaust flame: yellow core -> amber -> orange, dithered edge
-  if (ly >= 2.9 && ly < 6.8) {
-    const t = (ly - 2.9) / 3.9           // 0 at nozzle -> 1 at tip
-    const w = 1.3 * (1 - t) + 0.25
-    if (ax > w) return null
-    if (r > 0.85 - t * 0.55) return null // sparser toward the tip
-    if (ax < w * 0.35 && t < 0.5) return '#f4d134'
-    if (t < 0.45) return r < 0.5 ? '#fbb216' : '#ee8f09'
-    return r < 0.6 ? '#e65806' : '#c24a10'
-  }
-  return null
-}
-
-// ============================================================
 // CLOUD SEA — undulating band of white cloud along the bottom
 // ~1/10 of the screen, in front of the mountain: the scene sits
 // above a sea of clouds. Repainted per frame; time drives a slow
@@ -471,20 +420,6 @@ export default function AlpineHero() {
         for (let x = 0; x < cols; x++) {
           const c = skyCell(x, y, cols, rows)
           if (c) drawTexturedCell(skyCtx, x, y, c)
-        }
-
-      // LAYER 1b: rocket — static, left sky, nose toward top center
-      const rkCx = cols * 0.16, rkCy = rows * 0.22
-      const rkAng = 35 * Math.PI / 180   // tilt right of vertical
-      const cosA = Math.cos(rkAng), sinA = Math.sin(rkAng)
-      const SR = 9
-      for (let y = Math.floor(rkCy - SR); y <= rkCy + SR; y++)
-        for (let x = Math.floor(rkCx - SR); x <= rkCx + SR; x++) {
-          const dx = x - rkCx, dy = y - rkCy
-          const lx = dx * cosA + dy * sinA
-          const ly = -dx * sinA + dy * cosA
-          const c = rocketCell(lx, ly, x, y)
-          if (c) drawTexturedCell(skyCtx, x, y, c, true)
         }
 
       // LAYER 4: mountain
