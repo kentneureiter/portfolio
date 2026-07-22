@@ -263,27 +263,43 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
 }
 
 // ============================================================
-// SATELLITE — tiny pixel satellite drifting across the upper-left
-// sky. Lives behind the beige mask (z2), so it's only visible
-// inside the hover reveal. Body + gold foil + blue solar panels.
+// SATELLITE — small static satellite in the upper-left sky,
+// baked into the sky layer so it's only visible through the
+// hover reveal. Grey/white/black palette. Drawn in satellite-
+// local coords (lx along the panel axis, ly across it) and
+// rotated at draw time so it sits at a tilt.
+// Parts: dish + mast above, boxy body, struts, two solar-panel
+// wings with frame + grid lines.
 // ============================================================
-const SAT_COLORS: Record<string, string> = {
-  W: '#f7f2e4',   // antenna tip
-  s: '#8b93ad',   // struts / mast
-  B: '#cdd3de',   // body silver
-  b: '#9aa2b5',   // body shadow
-  G: '#eeba3d',   // gold foil
-  P: '#3568cd',   // panel blue
-  p: '#2451b8',   // panel deep
+function satelliteCell(lx: number, ly: number, x: number, y: number): string | null {
+  const r = hash2(x * 13 + 101, y * 17 + 57)
+  const ax = Math.abs(lx), ay = Math.abs(ly)
+  // dish: small bowl above the body
+  const ddx = lx, ddy = ly + 5.0
+  if (Math.sqrt(ddx * ddx + ddy * ddy * 1.8) < 1.7)
+    return r < 0.4 ? '#f4f6f8' : '#c9ced8'
+  // mast connecting dish to body
+  if (ax < 0.45 && ly > -4.4 && ly < -2.4) return '#555c68'
+  // body: boxy, lit from upper-left
+  if (ax <= 1.8 && ay <= 2.3) {
+    if (lx < -0.4 && ly < 0) return r < 0.5 ? '#d7dbe2' : '#aab0bb'
+    if (r < 0.25) return '#aab0bb'
+    return r < 0.85 ? '#6b7280' : '#2a2e36'
+  }
+  // struts out to the panels
+  if (ax <= 3.1 && ay <= 0.5) return '#2a2e36'
+  // solar-panel wings: dark cells, pale frame + grid lines
+  if (ax > 3.1 && ax <= 9.4 && ay <= 2.1) {
+    if (ax > 8.8 || ay > 1.6) return '#9aa2af'          // outer frame
+    if ((ax - 3.1) % 2.0 < 0.5) return '#9aa2af'        // grid lines
+    if (r < 0.12) return '#f4f6f8'                      // glints
+    return r < 0.55 ? '#2a2e36' : '#454b56'
+  }
+  return null
 }
-const SAT_SPRITE = [
-  '......W......',
-  '......s......',
-  'PpPpsBGBspPpP',
-  'PpPpsGBbspPpP',
-  'pPpP.Bbb.PpPp',
-]
-const SAT_SPEED = 2.4   // drift speed, cells per second — undulating band of white cloud along the bottom
+
+// ============================================================
+// CLOUD SEA — undulating band of white cloud along the bottom
 // ~1/10 of the screen, in front of the mountain: the scene sits
 // above a sea of clouds. Repainted per frame; time drives a slow
 // horizontal drift and billowing. Returns color or null.
@@ -389,7 +405,6 @@ export default function AlpineHero() {
   const maskRef = useRef<HTMLCanvasElement>(null)
   const mountainRef = useRef<HTMLCanvasElement>(null)
   const seaRef = useRef<HTMLCanvasElement>(null)
-  const satRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
@@ -397,8 +412,7 @@ export default function AlpineHero() {
     const mask = maskRef.current
     const mountain = mountainRef.current
     const sea = seaRef.current
-    const sat = satRef.current
-    if (!root || !sky || !mask || !mountain || !sea || !sat) return
+    if (!root || !sky || !mask || !mountain || !sea) return
 
     let cols = 0, rows = 0
     // nametag protection zone, in cell coords (measured from the
@@ -425,7 +439,7 @@ export default function AlpineHero() {
       const W = root.clientWidth, H = root.clientHeight
       cols = Math.ceil(W / PIXEL)
       rows = Math.ceil(H / PIXEL)
-      for (const c of [sky, mask, mountain, sea, sat]) { c.width = W; c.height = H }
+      for (const c of [sky, mask, mountain, sea]) { c.width = W; c.height = H }
 
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
@@ -442,6 +456,20 @@ export default function AlpineHero() {
         for (let x = 0; x < cols; x++) {
           const c = skyCell(x, y, cols, rows)
           if (c) drawTexturedCell(skyCtx, x, y, c)
+        }
+
+      // LAYER 1b: satellite — static, tilted, upper-left sky
+      const satCx = cols * 0.16, satCy = rows * 0.20
+      const satAng = -24 * Math.PI / 180
+      const cosA = Math.cos(satAng), sinA = Math.sin(satAng)
+      const SR = 12
+      for (let y = Math.floor(satCy - SR); y <= satCy + SR; y++)
+        for (let x = Math.floor(satCx - SR); x <= satCx + SR; x++) {
+          const dx = x - satCx, dy = y - satCy
+          const lx = dx * cosA + dy * sinA
+          const ly = -dx * sinA + dy * cosA
+          const c = satelliteCell(lx, ly, x, y)
+          if (c) drawTexturedCell(skyCtx, x, y, c, true)
         }
 
       // LAYER 4: mountain
@@ -521,28 +549,6 @@ export default function AlpineHero() {
         }
     }
 
-    // ---- LAYER 2 animation: satellite drifting through the sky ----
-    const satCtx = sat.getContext('2d')!
-    const paintSat = (time: number) => {
-      satCtx.clearRect(0, 0, sat.width, sat.height)
-      const w = SAT_SPRITE[0].length
-      const span = cols * 0.48 + w          // visible travel, in cells
-      const cycle = span + cols * 0.3       // extra = off-screen rest
-      const prog = (time * SAT_SPEED) % cycle
-      if (prog > span) return               // resting off-screen
-      const sx = Math.floor(prog - w)
-      const sy = Math.floor(rows * 0.11 + prog * 0.055 + Math.sin(time * 0.6) * 1.2)
-      // dither-fade out near the end of the run so it never pops
-      const fade = Math.max(0, Math.min(1, (span - prog) / (w * 1.5)))
-      for (let ry = 0; ry < SAT_SPRITE.length; ry++)
-        for (let rx = 0; rx < w; rx++) {
-          const ch = SAT_SPRITE[ry][rx]
-          if (ch === '.') continue
-          if (fade < 1 && BAYER[(sy + ry) & 3][(sx + rx) & 3] > fade) continue
-          drawTexturedCell(satCtx, sx + rx, sy + ry, SAT_COLORS[ch], true)
-        }
-    }
-
     let frame = 0
     const tick = () => {
       const time = (performance.now() - t0) / 1000
@@ -551,7 +557,6 @@ export default function AlpineHero() {
       cy += (py - cy) * 0.14
       radius += (targetRadius - radius) * 0.10
       paintMask(time)
-      paintSat(time)
       // the sea billows slowly — every 3rd frame is plenty
       if (frame % 3 === 0) paintSea(time)
       frame++
@@ -585,9 +590,6 @@ export default function AlpineHero() {
     <div ref={rootRef} className={styles.root}>
       {/* 1 — sky */}
       <canvas ref={skyRef} className={styles.sky} />
-
-      {/* 2 — satellite drifting through the sky, behind the mask */}
-      <canvas ref={satRef} className={styles.sat} />
 
       {/* 3 — beige mask, erased around the cursor */}
       <canvas ref={maskRef} className={styles.mask} />
