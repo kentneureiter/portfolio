@@ -263,7 +263,27 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
 }
 
 // ============================================================
-// CLOUD SEA — undulating band of white cloud along the bottom
+// SATELLITE — tiny pixel satellite drifting across the upper-left
+// sky. Lives behind the beige mask (z2), so it's only visible
+// inside the hover reveal. Body + gold foil + blue solar panels.
+// ============================================================
+const SAT_COLORS: Record<string, string> = {
+  W: '#f7f2e4',   // antenna tip
+  s: '#8b93ad',   // struts / mast
+  B: '#cdd3de',   // body silver
+  b: '#9aa2b5',   // body shadow
+  G: '#eeba3d',   // gold foil
+  P: '#3568cd',   // panel blue
+  p: '#2451b8',   // panel deep
+}
+const SAT_SPRITE = [
+  '......W......',
+  '......s......',
+  'PpPpsBGBspPpP',
+  'PpPpsGBbspPpP',
+  'pPpP.Bbb.PpPp',
+]
+const SAT_SPEED = 2.4   // drift speed, cells per second — undulating band of white cloud along the bottom
 // ~1/10 of the screen, in front of the mountain: the scene sits
 // above a sea of clouds. Repainted per frame; time drives a slow
 // horizontal drift and billowing. Returns color or null.
@@ -369,6 +389,7 @@ export default function AlpineHero() {
   const maskRef = useRef<HTMLCanvasElement>(null)
   const mountainRef = useRef<HTMLCanvasElement>(null)
   const seaRef = useRef<HTMLCanvasElement>(null)
+  const satRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
@@ -376,7 +397,8 @@ export default function AlpineHero() {
     const mask = maskRef.current
     const mountain = mountainRef.current
     const sea = seaRef.current
-    if (!root || !sky || !mask || !mountain || !sea) return
+    const sat = satRef.current
+    if (!root || !sky || !mask || !mountain || !sea || !sat) return
 
     let cols = 0, rows = 0
     // nametag protection zone, in cell coords (measured from the
@@ -403,7 +425,7 @@ export default function AlpineHero() {
       const W = root.clientWidth, H = root.clientHeight
       cols = Math.ceil(W / PIXEL)
       rows = Math.ceil(H / PIXEL)
-      for (const c of [sky, mask, mountain, sea]) { c.width = W; c.height = H }
+      for (const c of [sky, mask, mountain, sea, sat]) { c.width = W; c.height = H }
 
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
@@ -499,6 +521,28 @@ export default function AlpineHero() {
         }
     }
 
+    // ---- LAYER 2 animation: satellite drifting through the sky ----
+    const satCtx = sat.getContext('2d')!
+    const paintSat = (time: number) => {
+      satCtx.clearRect(0, 0, sat.width, sat.height)
+      const w = SAT_SPRITE[0].length
+      const span = cols * 0.48 + w          // visible travel, in cells
+      const cycle = span + cols * 0.3       // extra = off-screen rest
+      const prog = (time * SAT_SPEED) % cycle
+      if (prog > span) return               // resting off-screen
+      const sx = Math.floor(prog - w)
+      const sy = Math.floor(rows * 0.11 + prog * 0.055 + Math.sin(time * 0.6) * 1.2)
+      // dither-fade out near the end of the run so it never pops
+      const fade = Math.max(0, Math.min(1, (span - prog) / (w * 1.5)))
+      for (let ry = 0; ry < SAT_SPRITE.length; ry++)
+        for (let rx = 0; rx < w; rx++) {
+          const ch = SAT_SPRITE[ry][rx]
+          if (ch === '.') continue
+          if (fade < 1 && BAYER[(sy + ry) & 3][(sx + rx) & 3] > fade) continue
+          drawTexturedCell(satCtx, sx + rx, sy + ry, SAT_COLORS[ch], true)
+        }
+    }
+
     let frame = 0
     const tick = () => {
       const time = (performance.now() - t0) / 1000
@@ -507,6 +551,7 @@ export default function AlpineHero() {
       cy += (py - cy) * 0.14
       radius += (targetRadius - radius) * 0.10
       paintMask(time)
+      paintSat(time)
       // the sea billows slowly — every 3rd frame is plenty
       if (frame % 3 === 0) paintSea(time)
       frame++
@@ -540,6 +585,9 @@ export default function AlpineHero() {
     <div ref={rootRef} className={styles.root}>
       {/* 1 — sky */}
       <canvas ref={skyRef} className={styles.sky} />
+
+      {/* 2 — satellite drifting through the sky, behind the mask */}
+      <canvas ref={satRef} className={styles.sat} />
 
       {/* 3 — beige mask, erased around the cursor */}
       <canvas ref={maskRef} className={styles.mask} />

@@ -20,6 +20,7 @@
 }
 
 .sky      { z-index: 1; }
+.sat      { z-index: 2; }
 .mask     { z-index: 3; }
 .mountain { z-index: 4; }
 
