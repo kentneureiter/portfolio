@@ -263,37 +263,52 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
 }
 
 // ============================================================
-// SATELLITE — small static satellite in the upper-left sky,
-// baked into the sky layer so it's only visible through the
-// hover reveal. Grey/white/black palette. Drawn in satellite-
-// local coords (lx along the panel axis, ly across it) and
-// rotated at draw time so it sits at a tilt.
-// Parts: dish + mast above, boxy body, struts, two solar-panel
-// wings with frame + grid lines.
+// ROCKET — small static rocket in the left sky, baked into the
+// sky layer so it's only visible through the hover reveal.
+// Drawn in rocket-local coords (lx across the hull, ly along
+// it, nose at negative ly) and rotated at draw time so it
+// flies diagonally toward the top center.
+// Parts: nose cone, hull with porthole, fins, nozzle, and a
+// dithered exhaust flame.
 // ============================================================
-function satelliteCell(lx: number, ly: number, x: number, y: number): string | null {
+function rocketCell(lx: number, ly: number, x: number, y: number): string | null {
   const r = hash2(x * 13 + 101, y * 17 + 57)
-  const ax = Math.abs(lx), ay = Math.abs(ly)
-  // dish: small bowl above the body
-  const ddx = lx, ddy = ly + 5.0
-  if (Math.sqrt(ddx * ddx + ddy * ddy * 1.8) < 1.7)
-    return r < 0.4 ? '#f4f6f8' : '#c9ced8'
-  // mast connecting dish to body
-  if (ax < 0.45 && ly > -4.4 && ly < -2.4) return '#555c68'
-  // body: boxy, lit from upper-left
-  if (ax <= 1.8 && ay <= 2.3) {
-    if (lx < -0.4 && ly < 0) return r < 0.5 ? '#d7dbe2' : '#aab0bb'
-    if (r < 0.25) return '#aab0bb'
-    return r < 0.85 ? '#6b7280' : '#2a2e36'
+  const ax = Math.abs(lx)
+  // nose cone: tapers to a point, lit from the left
+  if (ly >= -6.5 && ly < -3.8) {
+    const w = 1.7 * (ly + 6.5) / 2.7
+    if (ax <= w) return lx < 0 ? '#f4f6f8' : (r < 0.6 ? '#d7dbe2' : '#aab0bb')
+    return null
   }
-  // struts out to the panels
-  if (ax <= 3.1 && ay <= 0.5) return '#2a2e36'
-  // solar-panel wings: dark cells, pale frame + grid lines
-  if (ax > 3.1 && ax <= 9.4 && ay <= 2.1) {
-    if (ax > 8.8 || ay > 1.6) return '#9aa2af'          // outer frame
-    if ((ax - 3.1) % 2.0 < 0.5) return '#9aa2af'        // grid lines
-    if (r < 0.12) return '#f4f6f8'                      // glints
-    return r < 0.55 ? '#2a2e36' : '#454b56'
+  // hull + fins
+  if (ly >= -3.8 && ly < 2.0) {
+    if (ax <= 1.7) {
+      // porthole
+      const wd = Math.sqrt(lx * lx + (ly + 2.2) * (ly + 2.2))
+      if (wd < 1.0) return r < 0.25 ? '#9aa2af' : '#2a2e36'
+      // left-lit shading across the hull
+      if (lx < -0.6) return r < 0.7 ? '#f4f6f8' : '#d7dbe2'
+      if (lx > 0.9) return r < 0.7 ? '#6b7280' : '#aab0bb'
+      return r < 0.75 ? '#d7dbe2' : '#aab0bb'
+    }
+    // fins flaring out near the tail
+    if (ly > 0.2) {
+      const fw = 1.7 + (ly - 0.2) * 1.0
+      if (ax <= fw) return r < 0.55 ? '#454b56' : '#2a2e36'
+    }
+    return null
+  }
+  // nozzle
+  if (ly >= 2.0 && ly < 2.9 && ax <= 1.0) return '#2a2e36'
+  // exhaust flame: yellow core -> amber -> orange, dithered edge
+  if (ly >= 2.9 && ly < 6.8) {
+    const t = (ly - 2.9) / 3.9           // 0 at nozzle -> 1 at tip
+    const w = 1.3 * (1 - t) + 0.25
+    if (ax > w) return null
+    if (r > 0.85 - t * 0.55) return null // sparser toward the tip
+    if (ax < w * 0.35 && t < 0.5) return '#f4d134'
+    if (t < 0.45) return r < 0.5 ? '#fbb216' : '#ee8f09'
+    return r < 0.6 ? '#e65806' : '#c24a10'
   }
   return null
 }
@@ -458,17 +473,17 @@ export default function AlpineHero() {
           if (c) drawTexturedCell(skyCtx, x, y, c)
         }
 
-      // LAYER 1b: satellite — static, tilted, upper-left sky
-      const satCx = cols * 0.16, satCy = rows * 0.20
-      const satAng = -24 * Math.PI / 180
-      const cosA = Math.cos(satAng), sinA = Math.sin(satAng)
-      const SR = 12
-      for (let y = Math.floor(satCy - SR); y <= satCy + SR; y++)
-        for (let x = Math.floor(satCx - SR); x <= satCx + SR; x++) {
-          const dx = x - satCx, dy = y - satCy
+      // LAYER 1b: rocket — static, left sky, nose toward top center
+      const rkCx = cols * 0.16, rkCy = rows * 0.22
+      const rkAng = 35 * Math.PI / 180   // tilt right of vertical
+      const cosA = Math.cos(rkAng), sinA = Math.sin(rkAng)
+      const SR = 9
+      for (let y = Math.floor(rkCy - SR); y <= rkCy + SR; y++)
+        for (let x = Math.floor(rkCx - SR); x <= rkCx + SR; x++) {
+          const dx = x - rkCx, dy = y - rkCy
           const lx = dx * cosA + dy * sinA
           const ly = -dx * sinA + dy * cosA
-          const c = satelliteCell(lx, ly, x, y)
+          const c = rocketCell(lx, ly, x, y)
           if (c) drawTexturedCell(skyCtx, x, y, c, true)
         }
 
