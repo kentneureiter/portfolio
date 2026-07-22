@@ -4,10 +4,10 @@ import { usePathname } from 'next/navigation'
 import styles from './Nav.module.css'
 
 const links = [
+  { href: '/about', label: 'About' },
   { href: '/projects', label: 'Projects' },
   { href: '/experience', label: 'Experience' },
   { href: '/reading', label: 'Reading' },
-  { href: '/about', label: 'About' },
 ]
 
 export default function Nav() {
