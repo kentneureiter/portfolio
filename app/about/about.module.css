@@ -1,0 +1,57 @@
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + 3rem) 1.5rem 5rem;
+}
+
+.layout {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.text {
+  flex: 1 1 0;
+}
+
+.text p {
+  margin-bottom: 1.15rem;
+}
+
+.figure {
+  flex: 0 0 320px;
+  position: sticky;
+  top: calc(var(--nav-height) + 3rem);
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border);
+  /* subtle paper-mounted look to match the site */
+  box-shadow: 0 2px 14px rgba(30, 28, 22, 0.12);
+}
+
+.caption {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .figure {
+    position: static;
+    flex-basis: auto;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+}
