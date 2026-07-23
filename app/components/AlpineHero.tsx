@@ -85,8 +85,8 @@ const P = {
   mOrange: ['#e33d12', '#f65a1a', '#ff7a2e'],         // vivid red-orange
   mAmber: ['#fb8c1e', '#ffab2e'],
   mYellow: '#ffd23f',
-  gLight: ['#e3ec6a', '#d8e455', '#cdd943'],          // pale chartreuse
-  gMid: ['#b3c437', '#96a832', '#7f9430'],            // olive chartreuse
+  gLight: ['#eef27c', '#e3ec6a', '#d8e455'],          // pale chartreuse
+  gMid: ['#cdd943', '#b0c23c', '#93a834'],            // bright chartreuse
   gDeep: ['#4a5420', '#333c18', '#262d13'],           // deep olive shadow
   mCream: '#f5ecd2',
 }
@@ -186,7 +186,7 @@ function mountainCell(
   const patch = fbm(x * 0.018 + 100, y * 0.018 + 100, 3)
   // hot pockets: smaller scattered autumn accents, not one blob
   const hot = fbm(x * 0.042 + 200, y * 0.042 + 200, 3)
-  const hotPatch = hot < 0.33   // SAVED: was 0.265 (Hawaiian palette)
+  const hotPatch = hot < 0.42   // SAVED: was 0.265 (Hawaiian palette)
   // fine speckle
   const spk = hash2(x * 7 + 1, y * 7 + 3)
 
