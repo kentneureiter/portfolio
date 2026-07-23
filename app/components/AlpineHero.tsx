@@ -67,16 +67,28 @@ const P = {
   sky: ['#b9d3f4', '#8fb6ee', '#6a9be6', '#4a82dc', '#3568cd'],
   skyDeep: '#2451b8',
   sun: ['#f6df8e', '#f2cd5e', '#eeba3d'],
-  // mountain — green-heavy Hawaiian palette + hot accents
-  mBlack: '#091008',                                  // green-black shadow '#0f1a0c'
-  mBrown: '#34230b',                                //'#3c2a10'
-  mOrange: ['#c24a10', '#e65806', '#fd7b11'],   //['#c24a10', '#df5f14', '#f0791a']
-  mAmber: ['#ee8f09', '#fbb216'],                 //['#ef9718', '#f7b52a']
-  mYellow: '#f4d134',                                  // brightest sparkle: #fad83c
-  gLight: ['#d0e55e', '#b4e03d', '#afdf62'],          // sunlit yellow-green ['#c8dc50', '#a9cf44', '#8fc23c']
-  gMid: ['#43ac0e', '#339113', '#3b7c29'],      //['#5da03c', '#4a8f34', '#3f7d2e']
-  gDeep: ['#189602', '#20491c', '#173a16'],     //['#2c5f23', '#20491c', '#173a16']
-  mCream: '#f5ecd2',                                //'#f5ecd2'
+  // mountain — Big Sur palette: neutral black, vivid red-orange,
+  // chartreuse yellow-greens.
+  // ---- SAVED: previous green-heavy Hawaiian palette ----
+  //   mBlack: '#091008'
+  //   mBrown: '#34230b'
+  //   mOrange: ['#c24a10', '#e65806', '#fd7b11']
+  //   mAmber: ['#ee8f09', '#fbb216']
+  //   mYellow: '#f4d134'
+  //   gLight: ['#d0e55e', '#b4e03d', '#afdf62']
+  //   gMid: ['#43ac0e', '#339113', '#3b7c29']
+  //   gDeep: ['#189602', '#20491c', '#173a16']
+  //   mCream: '#f5ecd2'
+  // ------------------------------------------------------
+  mBlack: '#151513',                                  // neutral charcoal-black
+  mBrown: '#4a2610',                                  // dark burnt undertone
+  mOrange: ['#e33d12', '#f65a1a', '#ff7a2e'],         // vivid red-orange
+  mAmber: ['#fb8c1e', '#ffab2e'],
+  mYellow: '#ffd23f',
+  gLight: ['#e3ec6a', '#d8e455', '#cdd943'],          // pale chartreuse
+  gMid: ['#b3c437', '#96a832', '#7f9430'],            // olive chartreuse
+  gDeep: ['#4a5420', '#333c18', '#262d13'],           // deep olive shadow
+  mCream: '#f5ecd2',
 }
 
 function pick(arr: string[], r: number): string {
@@ -174,7 +186,7 @@ function mountainCell(
   const patch = fbm(x * 0.018 + 100, y * 0.018 + 100, 3)
   // hot pockets: smaller scattered autumn accents, not one blob
   const hot = fbm(x * 0.042 + 200, y * 0.042 + 200, 3)
-  const hotPatch = hot < 0.265
+  const hotPatch = hot < 0.33   // SAVED: was 0.265 (Hawaiian palette)
   // fine speckle
   const spk = hash2(x * 7 + 1, y * 7 + 3)
 
