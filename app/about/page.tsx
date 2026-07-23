@@ -7,7 +7,7 @@ export const metadata = {
 export default function About() {
   return (
     <main className={styles.page}>
-      <h2>About</h2>
+      <h2 className={styles.heading}>About Me</h2>
       <div className={styles.layout}>
         <div className={styles.text}>
           <p>Hello 👋 Thanks for checking out my portfolio.</p>
