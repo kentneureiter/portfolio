@@ -17,13 +17,13 @@ export default function About() {
             Japan, where I rounded out high school.
           </p>
           <p>
-            My initial exposure to computers came from ID Tech&apos;s summer
+            My introduction to computers came from ID Tech&apos;s summer
             camps when I was younger, where I was exposed to Arduino programming
             and basic machine learning concepts.
           </p>
           <p>
-            Coming into college at Lehigh University, I have been exploring
-            numerous facets of computer engineering but have grown a deep
+            Since coming to Lehigh University, I have been exploring
+            the facets of computer engineering but have grown a deep
             interest in software systems and software-hardware integration.
             Some specific areas I take interest in are Robotics and Software
             Engineering.
@@ -49,7 +49,7 @@ export default function About() {
             (AIR Lab).
           </p>
           <p>
-            I was also a Division 1 soccer player my first two years, and
+            I was a Division 1 soccer player my first two years, and
             although short-lived, it has taught me countless lessons on
             collective effort and dedication to a goal. My journey to college
             soccer was no walk in the park but has allowed me to appreciate
