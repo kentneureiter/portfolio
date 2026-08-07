@@ -23,6 +23,9 @@
 .mask     { z-index: 3; }
 .mountain { z-index: 4; }
 
+/* ---- cumulus corner clouds: canvas repainted by the component ---- */
+.clouds   { z-index: 5; }
+
 /* ---- paper grain + vignette ---- */
 .grain {
   position: absolute;

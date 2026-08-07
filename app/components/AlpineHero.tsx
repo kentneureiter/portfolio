@@ -252,6 +252,62 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
 }
 
 // ============================================================
+// CUMULUS CORNERS — cloud blobs anchored in the lower-left and
+// lower-right corners. Each corner hosts a cluster of overlapping
+// puffs (a metaball field), so the mass reads as a few distinct
+// billowing clouds instead of a blanket. Noise warps the outline
+// over time; light from the upper-left shades the form: bright
+// tops, warm-grey bellies. Interiors print as soft solid cells,
+// edges dissolve into dithered dots.
+// ============================================================
+type Puff = { ox: number; oy: number; r: number; ph: number }
+
+function makeCluster(seed: number): Puff[] {
+  const puffs: Puff[] = []
+  const n = 6
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1)
+    const h = hash2(seed * 31 + i * 7, seed * 17 + i * 13)
+    puffs.push({
+      ox: (t - 0.5) * 34 + (h - 0.5) * 6,       // spread across the corner
+      oy: -Math.sin(t * Math.PI) * 8 - h * 5,   // arc: tallest mid-cluster
+      r: 7 + Math.sin(t * Math.PI) * 5 + h * 3,
+      ph: h * 6.28,                             // per-puff breathing phase
+    })
+  }
+  return puffs
+}
+
+const CLUSTER_L = makeCluster(3)
+const CLUSTER_R = makeCluster(8)
+const CLOUD_EXTENT = 30   // cluster bounding half-width, in cells
+
+// Metaball density + "how near the lit top of a puff" at one cell
+function cloudField(
+  x: number, y: number,
+  bx: number, by: number,
+  puffs: Puff[], time: number,
+): { d: number; top: number } {
+  // slow domain warp -> outlines billow organically
+  const wx = x + (fbm(x * 0.05 + time * 0.10, y * 0.05, 2) - 0.5) * 7
+  const wy = y + (fbm(x * 0.05 + 33, y * 0.05 - time * 0.07, 2) - 0.5) * 5
+  let d = 0, top = 0
+  for (const p of puffs) {
+    const r = p.r * (1 + 0.10 * Math.sin(time * 0.35 + p.ph))
+    const dx = wx - (bx + p.ox)
+    const dy = (wy - (by + p.oy)) * 1.4          // squash -> flat-bellied
+    const q = Math.max(0, 1 - (dx * dx + dy * dy) / (r * r))
+    d += q * q
+    top += q * q * (-dy / r)                     // above center = lit top
+  }
+  if (d > 0) top /= d
+  return { d, top }
+}
+
+// cloud shades: white tops -> warm grey bellies
+const CLOUD_SHADES = ['#d8d2bd', '#e8e3d2', '#f4f1e6', '#fdfcf7', '#ffffff']
+
+// ============================================================
 // REVEAL MASK — organic, noise-feathered blob around cursor.
 // Returns alpha [0,1] for cell (x,y): 1 = revealed. Caller
 // dithers the feathered edge with Bayer. time animates the
@@ -322,13 +378,15 @@ export default function AlpineHero() {
   const skyRef = useRef<HTMLCanvasElement>(null)
   const maskRef = useRef<HTMLCanvasElement>(null)
   const mountainRef = useRef<HTMLCanvasElement>(null)
+  const cloudsRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
     const sky = skyRef.current
     const mask = maskRef.current
     const mountain = mountainRef.current
-    if (!root || !sky || !mask || !mountain) return
+    const clouds = cloudsRef.current
+    if (!root || !sky || !mask || !mountain || !clouds) return
 
     let cols = 0, rows = 0
     // nametag protection zone, in cell coords (measured from the
@@ -355,7 +413,7 @@ export default function AlpineHero() {
       const W = root.clientWidth, H = root.clientHeight
       cols = Math.ceil(W / PIXEL)
       rows = Math.ceil(H / PIXEL)
-      for (const c of [sky, mask, mountain]) { c.width = W; c.height = H }
+      for (const c of [sky, mask, mountain, clouds]) { c.width = W; c.height = H }
 
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
@@ -440,6 +498,48 @@ export default function AlpineHero() {
         }
     }
 
+    // ---- LAYER 5 animation: cumulus corner clouds ----
+    const cctx = clouds.getContext('2d')!
+    const paintClouds = (time: number) => {
+      cctx.clearRect(0, 0, clouds.width, clouds.height)
+      // gentle sway keeps each cluster living in its corner
+      const sway = Math.sin(time * 0.05) * 5
+      const clusters = [
+        { bx: 2 + sway, by: rows + 3, puffs: CLUSTER_L },
+        { bx: cols - 3 - sway * 0.8, by: rows + 2, puffs: CLUSTER_R },
+      ]
+      for (const cl of clusters) {
+        const x0 = Math.max(0, Math.floor(cl.bx - CLOUD_EXTENT))
+        const x1 = Math.min(cols - 1, Math.ceil(cl.bx + CLOUD_EXTENT))
+        const y0 = Math.max(0, Math.floor(cl.by - CLOUD_EXTENT))
+        for (let y = y0; y < rows; y++)
+          for (let x = x0; x <= x1; x++) {
+            const { d, top } = cloudField(x, y, cl.bx, cl.by, cl.puffs, time)
+            const det = fbm(x * 0.14 + time * 0.06, y * 0.14, 3)
+            const edge = d - 0.24 + (det - 0.5) * 0.12
+            if (edge <= 0) continue
+            // shading: lit tops, surface detail, denser core brighter
+            const lum = top * 0.9 + (det - 0.5) * 0.7 + Math.min(edge, 0.5) * 0.6
+            const shade = CLOUD_SHADES[
+              Math.max(0, Math.min(4, Math.floor(lum * 3.2 + 2.2)))
+            ]
+            if (edge < 0.09) {
+              // dithered dot fringe
+              if (BAYER[y & 3][x & 3] > edge / 0.09) continue
+              drawTexturedCell(cctx, x, y, shade, true)
+            } else {
+              // soft solid interior: full cells, faint per-cell jitter
+              const j = hash2(x * 61 + 9, y * 47 + 21)
+              cctx.globalAlpha = 0.94 + 0.06 * j
+              cctx.fillStyle = shade
+              cctx.fillRect(x * PIXEL, y * PIXEL, PIXEL, PIXEL)
+              cctx.globalAlpha = 1
+            }
+          }
+      }
+    }
+
+    let frame = 0
     const tick = () => {
       const time = (performance.now() - t0) / 1000
       // trail the pointer; ease radius in/out
@@ -447,6 +547,9 @@ export default function AlpineHero() {
       cy += (py - cy) * 0.14
       radius += (targetRadius - radius) * 0.10
       paintMask(time)
+      // clouds evolve slowly — every 2nd frame is plenty
+      if (frame % 2 === 0) paintClouds(time)
+      frame++
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -483,6 +586,9 @@ export default function AlpineHero() {
 
       {/* 4 — mountain */}
       <canvas ref={mountainRef} className={styles.mountain} />
+
+      {/* 5 — cumulus clouds in the lower corners */}
+      <canvas ref={cloudsRef} className={styles.clouds} />
 
       {/* 6 — paper grain + vignette */}
       <div className={styles.grain} />
