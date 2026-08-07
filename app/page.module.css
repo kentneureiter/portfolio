@@ -1,8 +1,11 @@
 .home {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  /* pinned to the viewport: the landing page is a set page, no
+     scroll. Mountains/clouds anchor to the bottom edge, so any
+     viewport-height quirks are absorbed by the sky at the top. */
+  position: fixed;
+  inset: 0;
   overflow: hidden;
+  overscroll-behavior: none;
   background: var(--bg);
 }
 
