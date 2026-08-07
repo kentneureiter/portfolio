@@ -181,11 +181,12 @@ function mountainCell(
   // altitude band: 0 at crest -> 1 at bottom
   const band = Math.min(1, depth / (rows * 0.42))
 
-  // --- crest: bright flecks against dark ---
+  // --- crest: bright flecks against dark (no cream — it reads
+  // as holes against the beige page) ---
   if (crestZone) {
-    if (spk < 0.24) return P.mCream
-    if (spk < 0.40) return P.mYellow
-    if (spk < 0.54) return pick(P.gLight, patch)
+    if (spk < 0.20) return P.mYellow
+    if (spk < 0.44) return pick(P.gLight, patch)
+    if (spk < 0.54) return pick(P.gMid, patch)
     return P.mBlack
   }
 
