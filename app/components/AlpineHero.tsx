@@ -442,7 +442,7 @@ export default function AlpineHero() {
       for (let y = 0; y < rows; y++)
         for (let x = 0; x < cols; x++) {
           const c = mountainCell(x, y, ridge, farRidge, cols, rows)
-          if (c) drawTexturedCell(mctx, x, y, c)
+          if (c) drawTexturedCell(mctx, x, y, c, true)   // dense: full-strength ink
         }
 
       // LAYER 3: mask — solid beige (identical to paper, so the
