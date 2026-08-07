@@ -410,7 +410,17 @@ export default function AlpineHero() {
       const W = root.clientWidth, H = root.clientHeight
       cols = Math.ceil(W / PIXEL)
       rows = Math.ceil(H / PIXEL)
-      for (const c of [sky, mask, mountain, clouds]) { c.width = W; c.height = H }
+      // render at device resolution (capped at 2x) so dots are
+      // crisp on retina displays; all drawing code keeps working
+      // in CSS-pixel coordinates via the context transform
+      const dpr = Math.min(2, window.devicePixelRatio || 1)
+      for (const c of [sky, mask, mountain, clouds]) {
+        c.width = W * dpr
+        c.height = H * dpr
+        c.style.width = `${W}px`
+        c.style.height = `${H}px`
+        c.getContext('2d')!.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
 
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
