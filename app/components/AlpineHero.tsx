@@ -240,17 +240,6 @@ function mountainCell(
 // ============================================================
 function skyCell(x: number, y: number, cols: number, rows: number): string | null {
   const t = y / rows
-  // sun: dithered disc upper-right-of-center
-  const sx = cols * 0.72, sy = rows * 0.20, sr = Math.min(cols, rows) * 0.085
-  const dx = x - sx, dy = y - sy
-  const dd = Math.sqrt(dx * dx + dy * dy) / sr
-  if (dd < 1.15) {
-    const bayer = BAYER[y & 3][x & 3]
-    if (dd < 0.85 || (1.15 - dd) / 0.3 > bayer) {
-      const r = hash2(x * 9 + 2, y * 9 + 5)
-      return pick(P.sun, r)
-    }
-  }
   // lavender gradient with patchy variation — dense, few gaps
   const patch = fbm(x * 0.045, y * 0.045, 3)
   const r = hash2(x * 11 + 4, y * 11 + 6)
@@ -260,41 +249,6 @@ function skyCell(x: number, y: number, cols: number, rows: number): string | nul
   if (g > 2.3 && r < 0.35) return P.skyDeep
   const idx = Math.max(0, Math.min(4, Math.round(g)))
   return P.sky[idx]
-}
-
-// ============================================================
-// CLOUD SEA — undulating band of white cloud along the bottom
-// ~1/10 of the screen, in front of the mountain: the scene sits
-// above a sea of clouds. Repainted per frame; time drives a slow
-// horizontal drift and billowing. Returns color or null.
-// ============================================================
-const SEA_SHADOW = '#d9d5c6'
-const SEA_TOP_FRAC = 0.76    // repaint from this fraction of rows down
-
-function cloudSeaCell(x: number, y: number, cols: number, rows: number, time: number): string | null {
-  const bandTop = rows * 0.84            // wisps can rise above this
-  const rel = (y - bandTop) / (rows - bandTop)   // <0 above band
-  if (rel < -0.55) return null
-  // corner envelope: full strength at the edges, dissolving to
-  // nothing by ~32% in from each side — puffs live in the
-  // corners, not in a river across the whole bottom
-  const edge = Math.min(x, cols - 1 - x) / cols
-  const env = Math.max(0, 1 - edge / 0.32)
-  if (env <= 0) return null
-  // billowing: two drifting noise fields at different speeds
-  const n1 = fbm(x * 0.040 - time * 0.55, y * 0.11 + time * 0.04, 3)
-  const n2 = fbm(x * 0.013 + time * 0.15, y * 0.05 + 500, 2)
-  const v = rel * 2.2 + (n1 - 0.5) * 1.5 + (n2 - 0.5) * 1.1
-    + (Math.pow(env, 0.7) - 1) * 1.7
-  const bayer = BAYER[y & 3][x & 3]
-  if (v < 0.05 + bayer * 0.35) return null       // dithered billowy edge
-  // coherent billow shading: bright puff tops, shaded crevices
-  const shade = n1 + (n2 - 0.5) * 0.4 - rel * 0.08
-  if (shade > 0.46) return '#ffffff'
-  if (shade > 0.39) return '#fdfcf8'
-  if (shade > 0.33) return '#f3f1e8'
-  if (shade > 0.285) return '#e7e3d5'
-  return SEA_SHADOW
 }
 
 // ============================================================
@@ -368,15 +322,13 @@ export default function AlpineHero() {
   const skyRef = useRef<HTMLCanvasElement>(null)
   const maskRef = useRef<HTMLCanvasElement>(null)
   const mountainRef = useRef<HTMLCanvasElement>(null)
-  const seaRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const root = rootRef.current
     const sky = skyRef.current
     const mask = maskRef.current
     const mountain = mountainRef.current
-    const sea = seaRef.current
-    if (!root || !sky || !mask || !mountain || !sea) return
+    if (!root || !sky || !mask || !mountain) return
 
     let cols = 0, rows = 0
     // nametag protection zone, in cell coords (measured from the
@@ -403,7 +355,7 @@ export default function AlpineHero() {
       const W = root.clientWidth, H = root.clientHeight
       cols = Math.ceil(W / PIXEL)
       rows = Math.ceil(H / PIXEL)
-      for (const c of [sky, mask, mountain, sea]) { c.width = W; c.height = H }
+      for (const c of [sky, mask, mountain]) { c.width = W; c.height = H }
 
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
@@ -488,18 +440,6 @@ export default function AlpineHero() {
         }
     }
 
-    // ---- LAYER 5 animation: billowing corner cloud puffs ----
-    const sctx = sea.getContext('2d')!
-    const paintSea = (time: number) => {
-      sctx.clearRect(0, 0, sea.width, sea.height)
-      for (let y = Math.floor(rows * SEA_TOP_FRAC); y < rows; y++)
-        for (let x = 0; x < cols; x++) {
-          const c = cloudSeaCell(x, y, cols, rows, time)
-          if (c) drawTexturedCell(sctx, x, y, c, true)
-        }
-    }
-
-    let frame = 0
     const tick = () => {
       const time = (performance.now() - t0) / 1000
       // trail the pointer; ease radius in/out
@@ -507,9 +447,6 @@ export default function AlpineHero() {
       cy += (py - cy) * 0.14
       radius += (targetRadius - radius) * 0.10
       paintMask(time)
-      // the sea billows slowly — every 3rd frame is plenty
-      if (frame % 3 === 0) paintSea(time)
-      frame++
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -546,9 +483,6 @@ export default function AlpineHero() {
 
       {/* 4 — mountain */}
       <canvas ref={mountainRef} className={styles.mountain} />
-
-      {/* 5 — billowing cloud sea along the bottom */}
-      <canvas ref={seaRef} className={styles.sea} />
 
       {/* 6 — paper grain + vignette */}
       <div className={styles.grain} />

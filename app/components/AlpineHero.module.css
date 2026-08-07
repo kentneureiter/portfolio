@@ -23,9 +23,6 @@
 .mask     { z-index: 3; }
 .mountain { z-index: 4; }
 
-/* ---- corner cloud puffs: canvas repainted by the component ---- */
-.sea { z-index: 5; }
-
 /* ---- paper grain + vignette ---- */
 .grain {
   position: absolute;
