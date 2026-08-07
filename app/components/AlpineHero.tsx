@@ -178,10 +178,6 @@ function mountainCell(
   // fine speckle
   const spk = hash2(x * 7 + 1, y * 7 + 3)
 
-  // occasional gaps for sparkle inside the mass
-  // (mountain stays flush with the bottom edge — no fade)
-  if (spk > 0.975) return null
-
   // altitude band: 0 at crest -> 1 at bottom
   const band = Math.min(1, depth / (rows * 0.42))
 
