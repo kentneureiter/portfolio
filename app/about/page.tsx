@@ -18,8 +18,8 @@ export default function About() {
           </p>
           <p>
             My introduction to computers came from ID Tech&apos;s summer
-            camps when I was younger, where I was exposed to Arduino programming
-            and basic machine learning concepts.
+            camps when I was younger, where I was exposed to Scratch and
+            Arduino programming.
           </p>
           <p>
             Since coming to Lehigh University, I have been exploring
@@ -49,15 +49,14 @@ export default function About() {
             (AIR Lab).
           </p>
           <p>
-            I was a Division 1 soccer player my first two years, and
-            although short-lived, it has taught me countless lessons on
+            I was a Division 1 soccer player my first two years. 
+            Although short-lived, it has taught me countless lessons on
             collective effort and dedication to a goal. My journey to college
-            soccer was no walk in the park but has allowed me to appreciate
-            working on difficult things and has increased my capacity to
-            dedicate myself to long-term projects.
+            soccer was no walk in the park and has allowed me to appreciate
+            working on difficult things.
           </p>
           <p>
-            As I continue through college, I hope to continue to learn the
+            As I go through college, I hope to continue to learn the
             engineering skills necessary to do meaningful work post-graduation.
           </p>
         </div>
