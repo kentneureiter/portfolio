@@ -265,7 +265,7 @@ function makeCluster(seed: number): Puff[] {
     const t = i / (n - 1)
     const h = hash2(seed * 31 + i * 7, seed * 17 + i * 13)
     puffs.push({
-      ox: (t - 0.5) * 34 + (h - 0.5) * 6,       // spread across the corner
+      ox: (t - 0.5) * 46 + (h - 0.5) * 6,       // spread across the corner
       oy: -Math.sin(t * Math.PI) * 8 - h * 5,   // arc: tallest mid-cluster
       r: 7 + Math.sin(t * Math.PI) * 5 + h * 3,
       ph: h * 6.28,                             // per-puff breathing phase
@@ -276,7 +276,7 @@ function makeCluster(seed: number): Puff[] {
 
 const CLUSTER_L = makeCluster(3)
 const CLUSTER_R = makeCluster(8)
-const CLOUD_EXTENT = 30   // cluster bounding half-width, in cells
+const CLOUD_EXTENT = 40   // cluster bounding half-width, in cells
 
 // Metaball density + "how near the lit top of a puff" at one cell
 function cloudField(
@@ -285,11 +285,11 @@ function cloudField(
   puffs: Puff[], time: number,
 ): { d: number; top: number } {
   // slow domain warp -> outlines billow organically
-  const wx = x + (fbm(x * 0.05 + time * 0.10, y * 0.05, 2) - 0.5) * 7
-  const wy = y + (fbm(x * 0.05 + 33, y * 0.05 - time * 0.07, 2) - 0.5) * 5
+  const wx = x + (fbm(x * 0.05 + time * 0.22, y * 0.05, 2) - 0.5) * 7
+  const wy = y + (fbm(x * 0.05 + 33, y * 0.05 - time * 0.15, 2) - 0.5) * 5
   let d = 0, top = 0
   for (const p of puffs) {
-    const r = p.r * (1 + 0.10 * Math.sin(time * 0.35 + p.ph))
+    const r = p.r * (1 + 0.10 * Math.sin(time * 0.6 + p.ph))
     const dx = wx - (bx + p.ox)
     const dy = (wy - (by + p.oy)) * 1.4          // squash -> flat-bellied
     const q = Math.max(0, 1 - (dx * dx + dy * dy) / (r * r))
@@ -498,11 +498,12 @@ export default function AlpineHero() {
     const cctx = clouds.getContext('2d')!
     const paintClouds = (time: number) => {
       cctx.clearRect(0, 0, clouds.width, clouds.height)
-      // gentle sway keeps each cluster living in its corner
-      const sway = Math.sin(time * 0.05) * 5
+      // sway carries each cluster from its corner toward bottom
+      // center and back
+      const sway = Math.sin(time * 0.16) * 9
       const clusters = [
-        { bx: 2 + sway, by: rows + 3, puffs: CLUSTER_L },
-        { bx: cols - 3 - sway * 0.8, by: rows + 2, puffs: CLUSTER_R },
+        { bx: cols * 0.10 + sway, by: rows + 3, puffs: CLUSTER_L },
+        { bx: cols * 0.90 - sway * 0.85, by: rows + 2, puffs: CLUSTER_R },
       ]
       for (const cl of clusters) {
         const x0 = Math.max(0, Math.floor(cl.bx - CLOUD_EXTENT))
@@ -511,7 +512,7 @@ export default function AlpineHero() {
         for (let y = y0; y < rows; y++)
           for (let x = x0; x <= x1; x++) {
             const { d, top } = cloudField(x, y, cl.bx, cl.by, cl.puffs, time)
-            const det = fbm(x * 0.14 + time * 0.06, y * 0.14, 3)
+            const det = fbm(x * 0.14 + time * 0.12, y * 0.14, 3)
             const edge = d - 0.24 + (det - 0.5) * 0.12
             if (edge <= 0) continue
             // shading: lit tops, surface detail, denser core brighter
