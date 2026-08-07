@@ -84,12 +84,12 @@ const P = {
   // ------------------------------------------------
   mBlack: '#1a1410',                                  // warm near-black shadow
   mBrown: '#5c2f12',                                  // burnt sienna
-  mOrange: ['#9aa838', '#7f9430', '#67802b'],         // accent pockets: sage/chaparral green
-  mAmber: ['#c9d45a', '#aebf47'],                     // accent pockets: pale sage
+  mOrange: ['#7fae35', '#5f9430', '#4a7d2a'],         // accent pockets: true greens
+  mAmber: ['#b4d34f', '#93bf3d'],                     // accent pockets: bright leaf green
   mYellow: '#ffd23f',                                 // golden sparkle
-  gLight: ['#ffc46b', '#ffa93f', '#f9942a'],          // sunlit gold
-  gMid: ['#e8701d', '#d95f16', '#c25412'],            // mid rust-orange
-  gDeep: ['#8a3a0e', '#6b2c0c', '#4f200a'],           // deep rust shadow
+  gLight: ['#ffd076', '#ffb63f', '#ff9e1f'],          // bright sunlit gold
+  gMid: ['#ff7a1a', '#f2600d', '#e05510'],            // vivid orange
+  gDeep: ['#a8430c', '#8a3208', '#66250a'],           // rich rust shadow
   mCream: '#f5ecd2',
 }
 
