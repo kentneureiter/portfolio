@@ -68,16 +68,29 @@ const P = {
   sky: ['#b9d3f4', '#8fb6ee', '#6a9be6', '#4a82dc', '#3568cd'],
   skyDeep: '#2451b8',
   sun: ['#f6df8e', '#f2cd5e', '#eeba3d'],
-  // mountain — green-heavy Hawaiian palette + hot accents
-  mBlack: '#091008',                                  // green-black shadow '#0f1a0c'
-  mBrown: '#34230b',                                //'#3c2a10'
-  mOrange: ['#c24a10', '#e65806', '#fd7b11'],   //['#c24a10', '#df5f14', '#f0791a']
-  mAmber: ['#ee8f09', '#fbb216'],                 //['#ef9718', '#f7b52a']
-  mYellow: '#f4d134',                                  // brightest sparkle: #fad83c
-  gLight: ['#d0e55e', '#b4e03d', '#afdf62'],          // sunlit yellow-green ['#c8dc50', '#a9cf44', '#8fc23c']
-  gMid: ['#43ac0e', '#339113', '#3b7c29'],      //['#5da03c', '#4a8f34', '#3f7d2e']
-  gDeep: ['#189602', '#20491c', '#173a16'],     //['#2c5f23', '#20491c', '#173a16']
-  mCream: '#f5ecd2',                                //'#f5ecd2'
+  // mountain — Big Sur / Pasadena palette: sun-baked golds and
+  // rust oranges dominate; the old "hot pocket" slots now carry
+  // sage-green chaparral accents instead.
+  // ---- BASELINE: green-heavy Hawaiian palette ----
+  //   mBlack: '#091008'
+  //   mBrown: '#34230b'
+  //   mOrange: ['#c24a10', '#e65806', '#fd7b11']
+  //   mAmber: ['#ee8f09', '#fbb216']
+  //   mYellow: '#f4d134'
+  //   gLight: ['#d0e55e', '#b4e03d', '#afdf62']
+  //   gMid: ['#43ac0e', '#339113', '#3b7c29']
+  //   gDeep: ['#189602', '#20491c', '#173a16']
+  //   mCream: '#f5ecd2'
+  // ------------------------------------------------
+  mBlack: '#1a1410',                                  // warm near-black shadow
+  mBrown: '#5c2f12',                                  // burnt sienna
+  mOrange: ['#9aa838', '#7f9430', '#67802b'],         // accent pockets: sage/chaparral green
+  mAmber: ['#c9d45a', '#aebf47'],                     // accent pockets: pale sage
+  mYellow: '#ffd23f',                                 // golden sparkle
+  gLight: ['#ffc46b', '#ffa93f', '#f9942a'],          // sunlit gold
+  gMid: ['#e8701d', '#d95f16', '#c25412'],            // mid rust-orange
+  gDeep: ['#8a3a0e', '#6b2c0c', '#4f200a'],           // deep rust shadow
+  mCream: '#f5ecd2',
 }
 
 function pick(arr: string[], r: number): string {
