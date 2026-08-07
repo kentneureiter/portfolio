@@ -431,11 +431,14 @@ export default function AlpineHero() {
       rows = Math.ceil(H / PIXEL)
       for (const c of [sky, mask, mountain, clouds]) { c.width = W; c.height = H }
 
+      // shift the whole mountain down: less of the frame is
+      // mountain, more open sky (in cells)
+      const MTN_SHIFT = 6
       const ridge: number[] = new Array(cols)
       const farRidge: number[] = new Array(cols)
       for (let x = 0; x < cols; x++) {
-        ridge[x] = ridgeAt(x, cols, rows, SEED)
-        farRidge[x] = farRidgeAt(x, cols, rows, SEED)
+        ridge[x] = ridgeAt(x, cols, rows, SEED) + MTN_SHIFT
+        farRidge[x] = farRidgeAt(x, cols, rows, SEED) + MTN_SHIFT
       }
 
       // LAYER 1: sky — paper background + vibrant dither + sun

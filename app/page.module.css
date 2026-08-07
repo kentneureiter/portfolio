@@ -11,7 +11,8 @@
 
 .hero {
   position: absolute;
-  top: 20%;
+  /* 36px = the 6-cell shift the mountain moved down */
+  top: calc(20% + 36px);
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
