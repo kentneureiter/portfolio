@@ -177,13 +177,13 @@ function mountainCell(
   const lit = slope > 0.25       // descending rightward: catches upper-left light
   const shadow = slope < -0.25   // rising rightward: shadow side
 
-  // gullies: dark diagonal drainage streaks
-  const gully = fbm((x + y * 0.55) * 0.045, (y - x * 0.35) * 0.10 + 40, 3)
+  // gullies: dark drainage streaks, leaning shallow-diagonal
+  const gully = fbm((x + y * 0.55) * 0.045, (y - x * 0.22) * 0.10 + 40, 3)
   const inGully = gully < 0.26
-  // flutes: tight vertical striations that wander slightly with
-  // depth — the fluted-cliff texture of Hawaiian ridges. Value in
-  // [0,1]: high = sunlit rib, low = shadowed groove.
-  const flute = fbm((x + y * 0.22) * 0.30, y * 0.035 + 77, 2)
+  // flutes: tight striations that cascade at a shallower angle
+  // (y-coupling tilts them away from vertical). Value in [0,1]:
+  // high = sunlit rib, low = shadowed groove.
+  const flute = fbm((x + y * 0.55) * 0.30, y * 0.035 + 77, 2)
   // large patches: broad tonal variation across the faces
   const patch = fbm(x * 0.018 + 100, y * 0.018 + 100, 3)
   // hot pockets: smaller scattered autumn accents, not one blob
