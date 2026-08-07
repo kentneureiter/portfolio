@@ -19,7 +19,8 @@ import styles from './AlpineHero.module.css'
 // ============================================================
 
 const PIXEL = 6      // grid cell size in px
-const DOT_R = 2.4    // dot radius — beige shows between dots
+const DOT_MIN = 2.1  // smallest dot radius
+const DOT_MAX = PIXEL / 2   // flush with the cell edge, never overflowing
 const REVEAL_RADIUS = 38  // reveal blob radius, in cells
 
 // ---------- deterministic hash / noise ----------
@@ -360,12 +361,17 @@ function drawTexturedCell(
   // halo square behind the dot
   ctx.globalAlpha = dense ? 0.45 + 0.2 * t2 : 0.10 + 0.18 * t2
   ctx.fillRect(px, py, PIXEL, PIXEL)
-  // the dot: jittered radius, jittered ink
-  // radius floor 0.90 keeps the mass full — was 0.78, which left
-  // some cells looking like stray small circles
+  // the dot: radius spans a full continuum from small to flush
+  // with the cell edge. sqrt-bias skews the roll toward larger
+  // dots, so small circles are the exception — most cells read
+  // as near-full with halo only peeking through the corners
   ctx.globalAlpha = dense ? 0.92 + 0.08 * t3 : 0.78 + 0.22 * t3
   ctx.beginPath()
-  ctx.arc(px + PIXEL / 2, py + PIXEL / 2, DOT_R * (0.90 + 0.33 * t2), 0, Math.PI * 2)
+  ctx.arc(
+    px + PIXEL / 2, py + PIXEL / 2,
+    DOT_MIN + (DOT_MAX - DOT_MIN) * Math.sqrt(t2),
+    0, Math.PI * 2,
+  )
   ctx.fill()
   ctx.globalAlpha = 1
 }
