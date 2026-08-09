@@ -33,12 +33,7 @@ export default function About() {
             frustrating grade due to my (supposed) lack of participation in the
             class. The following semester, I sought to create a computer vision
             system that would detect raised hands in lectures to allow for
-            greater visibility for student questions and increased awareness
-            for professors while teaching.
-          </p>
-          <p>
-            Since then, I have found a growing passion for building software
-            and computer systems that aim to reach people in meaningful ways.
+            greater visibility for student questions and a better classroom experience.
           </p>
           <p>
             My engagement on campus has involved being a part of Lehigh Space
@@ -49,15 +44,15 @@ export default function About() {
             (AIR Lab).
           </p>
           <p>
-            I was a Division 1 soccer player my first two years. 
-            Although short-lived, it has taught me countless lessons on
+            I was a Division 1 soccer player my first two years, and 
+            although short-lived, it has taught me countless lessons on
             collective effort and dedication to a goal. My journey to college
             soccer was no walk in the park and has allowed me to appreciate
             working on difficult things.
           </p>
           <p>
             As I go through college, I hope to continue to learn the
-            engineering skills necessary to do meaningful work post-graduation.
+            engineering/coding skills necessary to do meaningful work post-graduation.
           </p>
         </div>
         <figure className={styles.figure}>
