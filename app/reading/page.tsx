@@ -57,6 +57,7 @@ export default function Reading() {
     <main className={styles.page}>
       <h2 className={styles.heading}>Reading</h2>
       <p className={styles.intro}>Books I&apos;ve read over the past few years.</p>
+      <p className={styles.intro}>Short List/Currently reading: C++ Primer(Josée Lajoie and Stanley B. Lippman), East of Eden(John Steinbeck)</p>
       {years.map(({ year, books }) => (
         <section key={year}>
           <h3 className={styles.year}>{year}</h3>

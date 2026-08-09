@@ -46,9 +46,7 @@ export default function About() {
           <p>
             I was a Division 1 soccer player my first two years, and 
             although short-lived, it has taught me countless lessons on
-            collective effort and dedication to a goal. My journey to college
-            soccer was no walk in the park and has allowed me to appreciate
-            working on difficult things.
+            collective effort and dedication to a goal.
           </p>
           <p>
             As I go through college, I hope to continue to learn the
