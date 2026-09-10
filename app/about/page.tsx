@@ -45,8 +45,8 @@ export default function About() {
           </p>
           <p>
             I was a Division 1 soccer player my first two years, and 
-            although short-lived, it has taught me countless lessons on
-            collective effort and dedication to a goal.
+            although short-lived, has played a meaningful part in my life
+            and has taught me valuable lessons on how to work effectively. 
           </p>
           <p>
             As I go through college, I hope to continue to learn the
