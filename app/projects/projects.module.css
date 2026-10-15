@@ -1,7 +1,7 @@
 .page {
-  max-width: 1150px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: calc(var(--nav-height) + 3rem) 1.5rem 5rem;
+  padding: calc(var(--nav-height) + 3rem) 2rem 5rem;
 }
 
 .heading {
@@ -13,7 +13,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem 1.5rem;
+  gap: 3rem 3rem;
 }
 
 @media (max-width: 900px) {
@@ -24,7 +24,7 @@
 /* each tile: faded cut-out image with a big title laid over it */
 .card {
   position: relative;
-  height: 320px;
+  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,19 +36,21 @@
 .cover,
 .placeholder {
   position: absolute;
-  inset: 50% auto auto 50%;
-  translate: -50% -50%;
-  max-width: 78%;
-  max-height: 78%;
-  object-fit: contain;
   opacity: 0.4;
   transition: opacity 0.3s ease, scale 0.3s ease;
 }
 
+/* image fills the whole tile (scaled to fit, never cropped) */
+.cover {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 /* stand-in until a cover image exists in public/projects/ */
 .placeholder {
-  width: 55%;
-  aspect-ratio: 1;
+  inset: 5%;
   border: 1px dashed var(--border);
   background:
     repeating-linear-gradient(45deg, transparent 0 10px, rgba(58, 122, 58, 0.06) 10px 11px);
@@ -102,5 +104,5 @@
 
 @media (max-width: 560px) {
   .grid { grid-template-columns: 1fr; gap: 0.5rem; }
-  .card { height: 240px; }
+  .card { height: 300px; }
 }
