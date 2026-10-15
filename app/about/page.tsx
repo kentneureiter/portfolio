@@ -50,7 +50,7 @@ export default function About() {
           </p>
           <p>
             As I go through college, I hope to continue to learn the
-            engineering/coding skills necessary to do meaningful work post-graduation.
+            engineering/coding skills necessary to do meaningful work post-graduation. This is a test
           </p>
         </div>
         <figure className={styles.figure}>
