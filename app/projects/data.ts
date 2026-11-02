@@ -32,15 +32,13 @@ export const PROJECTS: Project[] = [
   {
     slug: 'mars-rover',
     title: 'Mars Rover',
-    tagline: 'Electronics and autonomy software for Lehigh Space Initiative’s University Rover Challenge rover.',
-    role: 'Software team member, Lehigh Space Initiative',
-    when: 'TODO: start year – present',
+    tagline: 'Software for Lehigh Space Initiative’s University Rover Challenge rover.',
+    role: 'Software lead, Lehigh Space Initiative',
+    when: 'October 2025 – present',
     status: 'Ongoing',
-    stack: ['ROS2', 'Python', 'TODO: C++? Jetson? sensors?'],
+    stack: ['ROS2', 'Python', 'Nav2', 'C++', 'Jetson', 'LiDAR', 'GPS', 'IMU'],
     overview: [
-      'Lehigh Space Initiative builds a rover for the University Rover Challenge (URC). I work on the electronics and autonomous driving software.',
-      'In Fall 2026 the software team set aside several weeks to build the autonomy stack for URC 2027 together. The team had no autonomy code yet, so we were starting from zero.',
-    ],
+      'Lehigh Space Initiative builds a rover for the University Rover Challenge (URC). I work on the statemachine and autonomous driving software.'    ],
     contributions: [
       'Ran a ROS2 crash course for the software team, built around our own rover codebase so new members could contribute quickly.',
       'Working on autonomy tasks for URC 2027. TODO: which tasks/nodes you own.',
