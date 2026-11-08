@@ -60,7 +60,7 @@ export const PROJECTS: Project[] = [
   {
     slug: 'resonance-news',
     title: 'Resonance News',
-    tagline: 'TODO: one line — e.g. a personalized news aggregator that ranks stories with vector embeddings.',
+    tagline: 'Personalized news aggregator that ranks articles with vector embeddings.',
     role: 'TODO: solo / team + your role',
     when: 'TODO',
     stack: ['TODO: frontend', 'TODO: backend', 'TODO: embedding model / vector DB'],
@@ -72,7 +72,7 @@ export const PROJECTS: Project[] = [
   {
     slug: 'air-lab',
     title: 'AIR Lab',
-    tagline: 'TODO: one line — control software for autonomous flying drones.',
+    tagline: 'software for controlling autonomous drones and improving object detection speed.',
     role: 'TODO: role / lab',
     when: 'TODO: Summer 2026?',
     stack: ['TODO'],
@@ -109,9 +109,9 @@ export const PROJECTS: Project[] = [
   {
     slug: 'coalesce',
     title: 'Coalesce',
-    tagline: 'TODO: one line on what it does.',
+    tagline: 'Context Layer for Multi-Agent Workflows',
     role: 'TODO: team size + your role',
-    when: 'TODO',
+    when: 'October 2026',
     stack: ['TODO'],
     overview: ['TODO: the problem and what it does.'],
     contributions: ['TODO: what you personally built'],
@@ -147,7 +147,7 @@ export const PROJECTS: Project[] = [
   {
     slug: 'turtlesim-pid',
     title: 'TurtleSim PID',
-    tagline: 'A PID controller in ROS2, running on a Jetson Orin Nano.',
+    tagline: 'A PID controller in ROS2',
     role: 'Solo project',
     when: 'TODO',
     status: 'In progress',
