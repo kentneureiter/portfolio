@@ -72,8 +72,8 @@ export const PROJECTS: Project[] = [
   {
     slug: 'air-lab',
     title: 'AIR Lab',
-    tagline: 'software for controlling autonomous drones and improving object detection speed.',
-    role: 'TODO: role / lab',
+    tagline: 'Software for controlling autonomous drones and improving object detection speed.',
+    role: 'Undergraduate Research Assistant',
     when: 'TODO: Summer 2026?',
     stack: ['TODO'],
     overview: ['I worked on control software for autonomous flying drones. TODO: the lab, the drone platform and the goal.'],
@@ -110,7 +110,7 @@ export const PROJECTS: Project[] = [
     slug: 'coalesce',
     title: 'Coalesce',
     tagline: 'Context Layer for Multi-Agent Workflows',
-    role: 'TODO: team size + your role',
+    role: 'Team of 2',
     when: 'October 2026',
     stack: ['TODO'],
     overview: ['TODO: the problem and what it does.'],
@@ -120,7 +120,7 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'disaster-vlm',
-    title: 'Research: BINA Lab',
+    title: 'BINA Lab',
     tagline: 'A 3D vision-language model for assessing disaster damage from aerial point clouds.',
     role: 'Undergraduate researcher, under Prof. Rahnemoonfar',
     when: 'TODO: Summer 2026 – present',
@@ -171,7 +171,7 @@ export const PROJECTS: Project[] = [
   {
     slug: 'parkalot',
     title: 'ParkALot',
-    tagline: 'TODO: one line on what it does.',
+    tagline: 'App for parking availability on college campuses',
     role: 'TODO: team size + your role',
     when: 'TODO: AWS hackathon, date',
     stack: ['AWS', 'TODO: which services', 'TODO: frontend / backend'],
