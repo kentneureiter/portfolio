@@ -5,6 +5,8 @@
 // public/projects/ and the card picks it up automatically. Images with a
 // transparent background (cut-out objects) look best on the grid.
 //
+// Write links inside any text as [label](https://url).
+//
 // Any text from "TODO" onward is highlighted on the page so you can
 // spot what still needs writing. Delete or replace them before shipping.
 
@@ -12,6 +14,13 @@ export type Challenge = {
   problem: string
   solution: string
 }
+
+// One piece of a long-form section: a paragraph (plain string), an image,
+// or a small subheading. Images live in public/projects/<slug>/.
+export type Block =
+  | string
+  | { img: string; alt: string; caption?: string }
+  | { subheading: string }
 
 export type Project = {
   slug: string // URL: /projects/<slug>
@@ -22,8 +31,11 @@ export type Project = {
   status?: string
   stack: string[]
   overview: string[] // paragraphs
-  contributions: string[] // "What I did"
-  challenges: Challenge[]
+  resume?: string[] // resume bullets for this project
+  demo?: { youtube: string; caption?: string } // any YouTube link
+  sections?: { heading: string; blocks: Block[] }[] // long-form writing
+  contributions?: string[] // "What I did"
+  challenges?: Challenge[]
   outcome?: string[]
   links?: { label: string; href: string }[]
 }
@@ -38,21 +50,37 @@ export const PROJECTS: Project[] = [
     status: 'Ongoing',
     stack: ['ROS2', 'Python', 'Nav2', 'C++', 'Jetson', 'LiDAR', 'GPS', 'IMU'],
     overview: [
-      'Lehigh Space Initiative builds a rover for the University Rover Challenge (URC). I work on the statemachine and autonomous driving software.'    ],
-    contributions: [
-      'Ran a ROS2 crash course for the software team, built around our own rover codebase so new members could contribute quickly.',
-      'Working on autonomy tasks for URC 2027. TODO: which tasks/nodes you own.',
-      'Proposed a drivetrain redesign to the club president and mechanical team to add turn-in-place capability.',
-      'TODO: your electronics work',
+      'Lehigh’s Mars rover team competes in the [University Rover Challenge](https://urc.marssociety.org/). I have worked across the electrical and software sub-teams and am now focused on the autonomous driving software and the state machine.',
     ],
-    challenges: [
+    resume: [
+      'Built drivetrain control software (dual-joystick input, per-wheel alignment) in C++/Python, deployed across distributed Raspberry Pi nodes over CAN bus and containerized with Docker for real-time rover control',
+      'Wrote a ROS 2 C++ node that drives the rover to GPS waypoints, computing distance and bearing between coordinates and adjusting speed/heading with proportional control',
+      'Collaborated across software, electrical, and mechanical sub-teams to integrate control software with hardware components during field testing and iteration',
+    ],
+    demo: {
+      youtube: 'https://www.youtube.com/watch?v=Eyu1dI5hLIE',
+      caption: 'Our 2026 end-of-year demo submission.',
+    },
+    sections: [
       {
-        problem: 'The rover only steers its front two wheels, which limits maneuverability in tight terrain and complicates path following for autonomy.',
-        solution: 'Proposed changing the drivetrain to support turning in place. TODO: outcome of the proposal.',
-      },
-      {
-        problem: 'No existing autonomy code and a team with mixed ROS2 experience.',
-        solution: 'Taught a ROS2 crash course tied to our codebase so the whole team could build on a shared foundation. TODO: what you built next.',
+        heading: 'Ramble',
+        blocks: [
+          'I initially joined this team working with the electrical sub-team, as that was a little easier to contribute to right away. When I first looked at the repo, there was a lot of code and many concepts that I didn’t quite understand yet (this was when I knew very little about C++!).',
+          { img: '/projects/mars-rover/working-on-floor.jpg', alt: 'Working on the rover on the floor' },
+          'After a few months, I started trying to understand everything in the codebase, from launch to each ROS node. I was learning ROS and C++ on the side while documenting every file I understood.',
+          'My main contribution was helping transition from a 6-wheel skid-steering mechanism to a 4-wheel hybrid crab steering setup (the 2 front wheels crab, the 2 back wheels are fixed). This involved changes to the driveline Raspberry Pi as well as the logic behind how the joystick actually controls the rover. As I took on more responsibility, I realized this steering setup was not optimal for our tasks, but at that stage last year it was too late to change.',
+          'A big issue during testing was that the 2 front crab wheels often fell out of alignment, so we needed a way for the controls to correct it. We ended up using the side buttons on the joystick controllers to realign the left wheel to the right. For the spring 2026 submission, we ended up scoring quite poorly.',
+          'Having decided to pursue research this past summer, I also had the opportunity to keep working on the rover. This gave me the time to really understand how the code worked and learn the fundamentals of networking, containerization, and the deploy scripts that made the whole codebase make a lot more sense.',
+          'A big task I aimed to tackle over the summer was getting the autonomous driving missions implemented. The previous year introduced autonomous driving tasks, but for various reasons our software team wasn’t able to complete them. This was a big goal that I thought was feasible for this school year.',
+          'I wrote the software for the waypoint follower node over the summer, and it has been the backbone of what I have been working on since then during the fall.',
+          { img: '/projects/mars-rover/nav2-tutorial.png', alt: 'Nav2 tutorial screenshot' },
+          'I have watched more tutorials on SLAM and Nav2 concepts, which have really helped me understand path planning. Right now, we are still working on integrating the Nav2 stack into the various autonomous missions.',
+          { subheading: 'State Machine' },
+          'Alongside the autonomous software, we realized this would be the first time we implement a state machine for rover control. In previous years, the team got by with a boot mode that initialized each node and went straight into manual control, but adding autonomy means we need a state machine to switch between modes.',
+          'This is a long-overdue software decision, and it means we can now incorporate every module, like the science team’s software, into our base station controls.',
+          'A first draft of what we are thinking is shown in the diagram below. We are implementing it right now as well.',
+          { img: '/projects/mars-rover/state-machine.png', alt: 'First draft of the rover state machine' },
+        ],
       },
     ],
     links: [],
