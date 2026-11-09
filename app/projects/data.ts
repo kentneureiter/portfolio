@@ -66,7 +66,7 @@ export const PROJECTS: Project[] = [
         heading: 'Ramble',
         blocks: [
           'I initially joined this team working with the electrical sub-team, as that was a little easier to contribute to right away. When I first looked at the repo, there was a lot of code and many concepts that I didn’t quite understand yet (this was when I knew very little about C++!).',
-          { img: '/projects/mars-rover/working-on-floor.jpg', alt: 'Working on the rover on the floor' },
+          { img: '/projects/mars-rover/working-on-floor.png', alt: 'Working on the rover on the floor' },
           'After a few months, I started trying to understand everything in the codebase, from launch to each ROS node. I was learning ROS and C++ on the side while documenting every file I understood.',
           'My main contribution was helping transition from a 6-wheel skid-steering mechanism to a 4-wheel hybrid crab steering setup (the 2 front wheels crab, the 2 back wheels are fixed). This involved changes to the driveline Raspberry Pi as well as the logic behind how the joystick actually controls the rover. As I took on more responsibility, I realized this steering setup was not optimal for our tasks, but at that stage last year it was too late to change.',
           'A big issue during testing was that the 2 front crab wheels often fell out of alignment, so we needed a way for the controls to correct it. We ended up using the side buttons on the joystick controllers to realign the left wheel to the right. For the spring 2026 submission, we ended up scoring quite poorly.',
