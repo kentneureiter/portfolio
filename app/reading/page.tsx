@@ -24,6 +24,7 @@ const TITLES: Record<string, string> = {
   'hitchikersguidetothegalaxy': "The Hitchhiker's Guide to the Galaxy",
   'tomorrow': 'Tomorrow, and Tomorrow, and Tomorrow',
   'ddia': 'Designing Data-Intensive Applications',
+  'taleoftwocities': 'A Tale of Two Cities',
   'hailmary': 'Project Hail Mary',
   'importanceofbeingearnest': 'The Importance of Being Earnest',
   'stevejobs': 'Steve Jobs',
@@ -57,7 +58,7 @@ export default function Reading() {
     <main className={styles.page}>
       <h2 className={styles.heading}>Reading</h2>
       <p className={styles.intro}>Books I&apos;ve read over the past few years.</p>
-      <p className={styles.intro}>Short List/Currently reading: C++ Primer(Josée Lajoie and Stanley B. Lippman), East of Eden(John Steinbeck)</p>
+      <p className={styles.intro}>Short List/Currently reading: Designing Data-Intensive Applications(Martin Kleppmann), East of Eden(John Steinbeck)</p>
       {years.map(({ year, books }) => (
         <section key={year}>
           <h3 className={styles.year}>{year}</h3>
