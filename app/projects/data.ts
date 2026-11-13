@@ -222,10 +222,70 @@ export const PROJECTS: Project[] = [
     tagline: 'Context Layer for Multi-Agent Workflows',
     role: 'Team of 2',
     when: 'October 2026',
-    stack: ['TODO'],
-    overview: ['TODO: the problem and what it does.'],
-    contributions: ['TODO: what you personally built'],
-    challenges: [{ problem: 'TODO', solution: 'TODO' }],
+    stack: [
+      { group: 'Agent hooks', items: ['Claude Code hooks', 'Python (standard library only)'] },
+      { group: 'Backend', items: ['FastAPI', 'Python ast module'] },
+      { group: 'AI', items: ['Claude Haiku (background judge)'] },
+      { group: 'Database', items: ['Supabase', 'Supabase Realtime'] },
+      { group: 'Dashboard', items: ['Single-file HTML'] },
+    ],
+    overview: [
+      'Coalesce is a context layer for teams running several coding agents in parallel. When one agent changes a function, Coalesce works out exactly what changed and tells any other agent that is about to edit code depending on it, right before the edit. Conflicts get caught while the code is being written instead of at the PR. We built it as a team of 2 for a hackathon whose prompt was to redesign something that already exists.',
+    ],
+    resume: [
+      'Built a context layer that gives parallel coding agents live awareness of each other’s changes, injecting short factual notes into an agent’s context right before it edits code affected by another agent’s change',
+      'Wrote Claude Code hooks (prompt submit, pre-edit, turn end) in dependency-free Python that fail silently so they never break the agent',
+      'Built a FastAPI server that diffs functions before and after each change with Python’s ast module, matches changes to the file about to be edited, and runs a Claude Haiku judge in the background for less obvious cases',
+      'Streamed every agent session and note to a live dashboard through Supabase Realtime',
+    ],
+    demo: {
+      youtube: 'https://www.youtube.com/watch?v=V3Oro_giObM',
+    },
+    sections: [
+      {
+        heading: 'Inspiration',
+        blocks: [
+          'In our software engineering class this semester, we built part of our team project against the schema we’d all agreed on, but the backend didn’t follow it. Nobody found out until the PR, after the work was done. Coding agents make this worse. Teams now run several agents in parallel, each on its own branch, and they can’t see each other. One agent changes a function and another keeps calling it the old way. The hackathon prompt was to redesign something that exists, so we redesigned when teams find out about each other’s changes: while the code is being written, not at the PR.',
+        ],
+      },
+      {
+        heading: 'What it does',
+        blocks: [
+          'Coalesce gives every coding agent live context about what other agents are changing. When an agent finishes a turn, Coalesce reads the diff and pulls out exactly what changed, like get_user now returning a dict instead of a User. When another agent is about to edit a file that calls that function, Coalesce injects a short factual note into its context right before the edit, so it writes user["email"] instead of user.email. A live dashboard shows every session and animates each note from one agent to the other. We don’t fix code or block edits. The agent does the thinking, and we get it the right fact at the right time.',
+        ],
+      },
+      {
+        heading: 'How we built it',
+        blocks: [
+          { img: '/projects/coalesce/architecture.png', alt: 'Coalesce system architecture diagram' },
+          'Claude Code hooks fire when a prompt is sent, before a file edit, and when the agent finishes a turn. They’re written in plain Python with only the standard library and fail silently, so they never break the agent. The hooks talk to a FastAPI server that uses Python’s ast module to compare functions before and after a change. The server matches each change against the file the agent is about to edit and runs a Claude Haiku judge in the background for less obvious cases. Everything lives in Supabase, and the dashboard is a single HTML file that updates live through Supabase Realtime.',
+        ],
+      },
+      {
+        heading: 'Challenges we ran into',
+        blocks: [
+          'In one test, the agent edited a file by running a Python script through Bash instead of using its Edit tool, so our pre-edit hook never fired. We also learned that notes worded like commands get ignored or overreacted to, so we rewrote them as plain facts. And we ran into our own problem: we wrote a contract doc so we could build in parallel, and within hours the server had drifted from it.',
+        ],
+      },
+      {
+        heading: 'Accomplishments we’re proud of',
+        blocks: [
+          'The full loop works with real agents. One agent changes a function, and another agent on a different branch is told about it right before it would have broken something, then adapts.',
+        ],
+      },
+      {
+        heading: 'What we learned',
+        blocks: [
+          'Detecting a change is the easy part. The hard part is deciding who needs to know, when, and how to say it so an agent actually uses it. Agents respond well to context that’s specific and shows up at the moment they need it.',
+        ],
+      },
+      {
+        heading: 'What’s next',
+        blocks: [
+          'We want to catch every kind of edit, support languages beyond Python, and finish support for other agents like Gemini CLI. We also want to add Slack in both directions, plus schema contracts that warn an agent when its change breaks an interface the team agreed on, which is exactly what bit us in class.',
+        ],
+      },
+    ],
     links: [],
   },
   {
