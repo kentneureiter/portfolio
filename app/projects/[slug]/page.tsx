@@ -155,12 +155,14 @@ export default async function ProjectPage({ params }: Props) {
         )}
       </section>
 
-      <section className={styles.section}>
-        <h3>Overview</h3>
-        {project.overview.map((p, i) => (
-          <p key={i}><T>{p}</T></p>
-        ))}
-      </section>
+      {project.overview && project.overview.length > 0 && (
+        <section className={styles.section}>
+          <h3>Overview</h3>
+          {project.overview.map((p, i) => (
+            <p key={i}><T>{p}</T></p>
+          ))}
+        </section>
+      )}
 
       {project.resume && project.resume.length > 0 && (
         <section className={styles.section}>

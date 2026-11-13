@@ -33,7 +33,7 @@ export type Project = {
   when: string
   status?: string
   stack: (string | StackGroup)[] // plain chips, or grouped rows like { group: 'Backend', items: [...] }
-  overview: string[] // paragraphs
+  overview?: string[] // paragraphs
   resume?: string[] // resume bullets for this project
   demo?: { youtube?: string; pdf?: string; url?: string; label?: string; caption?: string } // YouTube embed, embedded PDF (e.g. slides) and/or a live link
   sections?: { heading: string; blocks: Block[] }[] // long-form writing
@@ -335,21 +335,16 @@ export const PROJECTS: Project[] = [
     title: 'TurtleSim PID',
     tagline: 'A PID controller in ROS2',
     role: 'Solo project',
-    when: 'TODO',
+    when: '2026',
     status: 'In progress',
     stack: ['ROS2 Jazzy', 'Python', 'Jetson Orin Nano', 'Ubuntu 24.04'],
-    overview: [
-      'A PID controller that drives the ROS2 TurtleSim turtle to target poses, built as a foundation for control work on real robots.',
-    ],
-    contributions: [
-      'Set up a Jetson Orin Nano with JetPack, Ubuntu 24.04 and ROS2 Jazzy.',
-      'Designed a Python node architecture built on event-driven callbacks.',
-      'TODO: the controller itself (gains, tuning approach)',
-    ],
-    challenges: [
+    sections: [
       {
-        problem: 'ROS2 installation failed on the Jetson because of a GPG key issue.',
-        solution: 'TODO: one line on how you fixed it',
+        heading: 'Ramble',
+        blocks: [
+          'For this project, I implemented a PID controller from scratch, starting with a standalone Python simulation to understand how each gain term shapes the system’s response before moving into ROS 2. The motivation came while I was working on the drone software at the AIR Lab over the summer: I thought this project would be a good way to familiarize myself with the basics of control theory and the math behind it.',
+          'I set up ROS 2 Jazzy on a Jetson Orin Nano running JetPack 7.2, which meant working through real environment issues (a rotated apt signing key, workspace sourcing, package structure) rather than following a clean tutorial path. The controller itself runs as a ROS 2 node that subscribes to TurtleSim’s pose topic and publishes velocity commands, closing the loop on an actual simulated robot instead of a toy variable. The main thing I took away was the architecture: event-driven callbacks replacing the simulation loop, and the controller/plant separation that makes the same PID logic portable to real hardware.',
+        ],
       },
     ],
     links: [],
