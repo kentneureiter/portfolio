@@ -177,7 +177,7 @@ export default async function ProjectPage({ params }: Props) {
 
       {project.demo && (
         <section className={styles.section}>
-          <h3>Demo</h3>
+          <h3>{project.demo.heading ?? 'Demo'}</h3>
           {project.demo.youtube && youtubeId(project.demo.youtube) && (
             <div className={styles.video}>
               <iframe

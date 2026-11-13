@@ -35,7 +35,7 @@ export type Project = {
   stack: (string | StackGroup)[] // plain chips, or grouped rows like { group: 'Backend', items: [...] }
   overview?: string[] // paragraphs
   resume?: string[] // resume bullets for this project
-  demo?: { youtube?: string; pdf?: string; url?: string; label?: string; caption?: string } // YouTube embed, embedded PDF (e.g. slides) and/or a live link
+  demo?: { heading?: string; youtube?: string; pdf?: string; url?: string; label?: string; caption?: string } // YouTube embed, embedded PDF (e.g. slides) and/or a live link
   sections?: { heading: string; blocks: Block[] }[] // long-form writing
   contributions?: string[] // "What I did"
   challenges?: Challenge[]
@@ -353,13 +353,58 @@ export const PROJECTS: Project[] = [
     slug: 'parkalot',
     title: 'ParkALot',
     tagline: 'App for parking availability on college campuses',
-    role: 'TODO: team size + your role',
-    when: 'TODO: AWS hackathon, date',
-    stack: ['AWS', 'TODO: which services', 'TODO: frontend / backend'],
-    overview: ['Built at an AWS hackathon. TODO: the problem and what it does.'],
-    contributions: ['TODO: what you personally built'],
-    challenges: [{ problem: 'TODO', solution: 'TODO' }],
-    outcome: ['TODO: placement / demo / what you would build next'],
+    role: 'Team of 2',
+    when: 'October 2025',
+    stack: ['Amazon Location Service (geofencing)', 'AWS Lambda', 'DynamoDB', 'API Gateway', 'AWS Amplify'],
+    demo: {
+      heading: 'Slides',
+      pdf: '/projects/parkalot/slides.pdf',
+      label: 'Open the slides',
+    },
+    sections: [
+      {
+        heading: 'Inspiration',
+        blocks: [
+          'Often, when my friends and I come back from a night drive, soccer practice, or anything else that requires a car, we run into the same small inconvenience: checking every parking lot on campus close to where we live (Maida). We drive around checking Trembley, the front of the M&M dorms, the back of the M&M dorms, Dravo, and the other spots on campus. Of course, we prefer the Trembley lot, but we often end up with one available spot in the farthest lot at Dravo. Lehigh has a parking problem: it issues roughly as many permits as it has spots, so it can take a while to find one, especially in the afternoon or late at night. We built this website so people can see the availability of each parking lot and not waste time driving all across campus.',
+        ],
+      },
+      {
+        heading: 'What it does',
+        blocks: [
+          'Each user signs up so the website can create a unique ID for them. Once signed in, you get access to a map of the 5 parking lots we covered (Trembley, the front of the M&M dorms, the back of the M&M dorms, Dravo Road, and the Dravo lot), with colored dots showing the availability of each lot.',
+        ],
+      },
+      {
+        heading: 'How we built it',
+        blocks: [
+          'We used a series of AWS services, starting with Amazon Location Service and its geofences to define the areas of the parking lots on campus. This gave us IDs for each lot’s area, which we later used in one of our Lambda functions to check whether a user’s location is inside a parking lot. That way, anyone marking a spot as taken or free on the website has to actually be in the lot, rather than reserving a spot before they get there. We used DynamoDB to store the lot data, Amplify to host the website’s frontend, and API Gateway to expose everything we built as an API that works from a computer or phone.',
+        ],
+      },
+      {
+        heading: 'Challenges we ran into',
+        blocks: [
+          'This was the first time either of us had used AWS, so a big challenge was learning how to integrate the different services and get them working together as one website. We also struggled to make sure the geofence ID was actually being used, rather than just the latitude and longitude of the marker we placed on the map.',
+        ],
+      },
+      {
+        heading: 'Accomplishments we’re proud of',
+        blocks: [
+          'We were very excited when we got the API working and saw the working map in the first version of our website.',
+        ],
+      },
+      {
+        heading: 'What we learned',
+        blocks: [
+          'We got familiar with some of the basic AWS services, like Amplify, DynamoDB, and API Gateway, and feel much more comfortable with the platform. We also learned some frontend, since neither of us had much experience with it.',
+        ],
+      },
+      {
+        heading: 'What’s next',
+        blocks: [
+          'We came up with so many good ideas along the way that, if we continued the project, we could make it a very deployable application for the university. For example: making sure people press Leave when they leave a spot, so availability stays accurate, by checking in with users who are still marked as parked every 8–12 hours; or a rating system for how accurately each user marks when they park and leave.',
+        ],
+      },
+    ],
     links: [],
   },
 ]
