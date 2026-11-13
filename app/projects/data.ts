@@ -20,7 +20,10 @@ export type Challenge = {
 export type Block =
   | string
   | { img: string; alt: string; caption?: string }
+  | { gallery: { img: string; alt: string }[]; caption?: string } // images side by side
   | { subheading: string }
+
+export type StackGroup = { group: string; items: string[] }
 
 export type Project = {
   slug: string // URL: /projects/<slug>
@@ -29,10 +32,10 @@ export type Project = {
   role: string
   when: string
   status?: string
-  stack: string[]
+  stack: (string | StackGroup)[] // plain chips, or grouped rows like { group: 'Backend', items: [...] }
   overview: string[] // paragraphs
   resume?: string[] // resume bullets for this project
-  demo?: { youtube: string; caption?: string } // any YouTube link
+  demo?: { youtube?: string; url?: string; label?: string; caption?: string } // YouTube embed and/or a live link
   sections?: { heading: string; blocks: Block[] }[] // long-form writing
   contributions?: string[] // "What I did"
   challenges?: Challenge[]
@@ -88,13 +91,54 @@ export const PROJECTS: Project[] = [
   {
     slug: 'resonance-news',
     title: 'Resonance News',
-    tagline: 'Personalized news aggregator that ranks articles with vector embeddings.',
-    role: 'TODO: solo / team + your role',
-    when: 'TODO',
-    stack: ['TODO: frontend', 'TODO: backend', 'TODO: embedding model / vector DB'],
-    overview: ['TODO: what it is and who it is for.'],
-    contributions: ['TODO: what you personally built'],
-    challenges: [{ problem: 'TODO', solution: 'TODO' }],
+    tagline: 'A personalized daily news briefing for college students.',
+    role: 'Co-founder, backend lead',
+    when: 'March 2026 – present',
+    status: 'Live',
+    stack: [
+      { group: 'Backend', items: ['Python (FastAPI)', 'NumPy', 'igraph + leidenalg', 'feedparser'] },
+      { group: 'Frontend', items: ['Next.js', 'Tailwind CSS'] },
+      { group: 'Database', items: ['Supabase (Postgres + pgvector)'] },
+      { group: 'AI/ML', items: ['OpenAI text-embedding-3-small (embeddings)', 'GPT-4o-mini (world-news importance scoring)', 'GPT-4o (summaries)'] },
+      { group: 'Data sources', items: ['Guardian API', 'NewsAPI', 'RSS feeds', 'Jina Reader (full-text extraction)'] },
+      { group: 'Hosting', items: ['Railway (backend + cron jobs)', 'Vercel (frontend)'] },
+      { group: 'Email', items: ['Resend', 'SPF/DKIM/DMARC on our domain'] },
+    ],
+    overview: [
+      '[Resonance News](https://resonance-news.com) is a personalized daily news briefing for college students. Each user gets a curated email every morning with articles picked for their interests and things they want to learn about, plus a short section of the most important world news. I co-founded it and own the backend: the scraping, the ML ranking pipeline, and the infrastructure that runs it every day.',
+    ],
+    resume: [
+      'Full-stack AI news platform delivering personalized daily briefings to 50+ active users',
+      'Converts free-text onboarding responses into structured interest vectors, bootstrapping recommendations with no click history',
+      'Designed an information retrieval pipeline that ingests 500+ articles/day from RSS feeds and the Guardian’s API, embeds them with OpenAI’s model, and applies Leiden graph clustering to group related coverage and deduplicate similar topics across outlets',
+      'Implemented cosine similarity ranking against user interest vectors, scoring both topical focus and cross-topic relevance to keep briefings varied',
+    ],
+    demo: {
+      url: 'https://resonance-news.com',
+      label: 'Visit resonance-news.com',
+    },
+    sections: [
+      {
+        heading: 'Ramble',
+        blocks: [
+          'This project started out as a simple idea from my friend last spring. Starting out, we had very little exposure to vector embeddings and recommendation systems, so a lot of the early work was just figuring out what we were even building. The core idea was simple: turn every article and every user into a vector, and recommend the articles that sit closest to each user. Actually making that work every single morning, without someone babysitting it, was a whole different problem.',
+          {
+            gallery: [
+              { img: '/projects/resonance-news/whiteboard-1.jpg', alt: 'Early whiteboard sketch 1' },
+              { img: '/projects/resonance-news/whiteboard-2.jpg', alt: 'Early whiteboard sketch 2' },
+              { img: '/projects/resonance-news/whiteboard-3.jpg', alt: 'Early whiteboard sketch 3' },
+            ],
+          },
+          'The first thing I had to understand was cosine similarity, since that’s how we decide whether an article “matches” a user. I could have imported it from scikit-learn, but I ended up writing it directly in NumPy. It’s only a few lines, and doing it myself made me understand what was going on. One thing that surprised me was how compressed the similarity scores are with high-dimensional embeddings. Almost everything lands in a narrow band, so a threshold that sounds low on paper (around 0.25) ended up being the right cutoff for “relevant.”',
+          'The next big problem was duplicates. When something major happens, ten outlets write the same story, and our early briefings would show the same event three times in one email. To fix this, I learned about graph clustering. We build a similarity graph between articles and run Leiden clustering on it, so articles covering the same story get grouped together. The ranker then only pulls one article per cluster. We originally allowed two per cluster and didn’t realize that was the source of a lot of repetitive briefings until we looked closely at real emails.',
+          { img: '/projects/resonance-news/pipeline-diagram.png', alt: 'Pipeline architecture diagram' },
+          'We also realized one vector per user wasn’t enough. People read the news for what they already care about, but also for things they want to get better at understanding. So each user now has two vectors, one for interests and one for learning goals, ranked independently with their own slots in the email. On top of that, there’s a world news section, where GPT-4o-mini scores Guardian world articles by importance, with a 7-day rolling dedup so the same ongoing story doesn’t show up every day.',
+          { img: '/projects/resonance-news/briefing-email.png', alt: 'A real briefing email' },
+          'The part I probably learned the most from wasn’t the ML at all. It was everything around it. The whole pipeline runs as cron jobs on Railway, and I ran into plenty of bugs that only show up in deployment, like environment variables loading after the database client had already initialized, or each Railway service needing its own keys updated separately. Getting emails to land in inboxes instead of spam meant learning what SPF, DKIM, and DMARC actually are. Once we had real users, I went back and did a security pass: enabling row-level security in Supabase, locking down an endpoint that anyone could have hit to trigger the pipeline, and tightening our CORS settings. None of that is flashy, but it was the first time I’d built something where other people depended on it working every morning.',
+          { img: '/projects/resonance-news/railway-dashboard.png', alt: 'Railway dashboard and cron logs' },
+        ],
+      },
+    ],
     links: [],
   },
   {

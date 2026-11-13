@@ -57,6 +57,22 @@ function youtubeId(url: string) {
 function BlockView({ block }: { block: Block }) {
   if (typeof block === 'string') return <p><T>{block}</T></p>
   if ('subheading' in block) return <h4 className={styles.subheading}>{block.subheading}</h4>
+  if ('gallery' in block)
+    return (
+      <figure className={styles.figure}>
+        <div className={styles.gallery}>
+          {block.gallery.map(g =>
+            publicFileExists(g.img) ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={g.img} src={g.img} alt={g.alt} />
+            ) : (
+              <div key={g.img} className={styles.missing}>Add image: public{g.img}</div>
+            ),
+          )}
+        </div>
+        {block.caption && <figcaption><T>{block.caption}</T></figcaption>}
+      </figure>
+    )
   // image: show a labeled placeholder until the file is added to /public
   return (
     <figure className={styles.figure}>
@@ -113,11 +129,30 @@ export default async function ProjectPage({ params }: Props) {
 
       <section className={styles.section}>
         <h3>Stack</h3>
-        <ul className={styles.stack}>
-          {project.stack.map(s => (
-            <li key={s}><T>{s}</T></li>
-          ))}
-        </ul>
+        {project.stack.every(s => typeof s === 'string') ? (
+          <ul className={styles.stack}>
+            {(project.stack as string[]).map(s => (
+              <li key={s}><T>{s}</T></li>
+            ))}
+          </ul>
+        ) : (
+          <dl className={styles.stackGroups}>
+            {project.stack.map(s =>
+              typeof s === 'string' ? null : (
+                <div key={s.group}>
+                  <dt>{s.group}</dt>
+                  <dd>
+                    <ul className={styles.stack}>
+                      {s.items.map(item => (
+                        <li key={item}><T>{item}</T></li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
+              ),
+            )}
+          </dl>
+        )}
       </section>
 
       <section className={styles.section}>
@@ -138,17 +173,24 @@ export default async function ProjectPage({ params }: Props) {
         </section>
       )}
 
-      {project.demo && youtubeId(project.demo.youtube) && (
+      {project.demo && (
         <section className={styles.section}>
           <h3>Demo</h3>
-          <div className={styles.video}>
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${youtubeId(project.demo.youtube)}`}
-              title={`${project.title} demo`}
-              allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
-          </div>
+          {project.demo.youtube && youtubeId(project.demo.youtube) && (
+            <div className={styles.video}>
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${youtubeId(project.demo.youtube)}`}
+                title={`${project.title} demo`}
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            </div>
+          )}
+          {project.demo.url && (
+            <a href={project.demo.url} target="_blank" rel="noreferrer" className={styles.demoLink}>
+              {project.demo.label ?? project.demo.url} ↗
+            </a>
+          )}
           {project.demo.caption && <p className={styles.videoCaption}><T>{project.demo.caption}</T></p>}
         </section>
       )}
