@@ -124,9 +124,9 @@ export const PROJECTS: Project[] = [
           'This project started out as a simple idea from my friend last spring. Starting out, we had very little exposure to vector embeddings and recommendation systems, so a lot of the early work was just figuring out what we were even building. The core idea was simple: turn every article and every user into a vector, and recommend the articles that sit closest to each user. Actually making that work every single morning, without someone babysitting it, was a whole different problem.',
           {
             gallery: [
-              { img: '/projects/resonance-news/whiteboard-1.jpg', alt: 'Early whiteboard sketch 1' },
-              { img: '/projects/resonance-news/whiteboard-2.jpg', alt: 'Early whiteboard sketch 2' },
-              { img: '/projects/resonance-news/whiteboard-3.jpg', alt: 'Early whiteboard sketch 3' },
+              { img: '/projects/resonance-news/whiteboard-1.png', alt: 'Early whiteboard sketch 1' },
+              { img: '/projects/resonance-news/whiteboard-2.png', alt: 'Early whiteboard sketch 2' },
+              { img: '/projects/resonance-news/whiteboard-3.png', alt: 'Early whiteboard sketch 3' },
             ],
           },
           'The first thing I had to understand was cosine similarity, since that’s how we decide whether an article “matches” a user. I could have imported it from scikit-learn, but I ended up writing it directly in NumPy. It’s only a few lines, and doing it myself made me understand what was going on. One thing that surprised me was how compressed the similarity scores are with high-dimensional embeddings. Almost everything lands in a narrow band, so a threshold that sounds low on paper (around 0.25) ended up being the right cutoff for “relevant.”',
