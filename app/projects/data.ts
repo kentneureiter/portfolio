@@ -180,8 +180,8 @@ export const PROJECTS: Project[] = [
           'With the inference speed improved, it was time to get the blimp/drone actually flying properly. This meant everything in the existing code had to work alongside my changes.',
           {
             gallery: [
-              { img: '/projects/air-lab/hardware-1.jpg', alt: 'Drone hardware photo 1' },
-              { img: '/projects/air-lab/hardware-2.jpg', alt: 'Drone hardware photo 2' },
+              { img: '/projects/air-lab/hardware-1.jpeg', alt: 'Drone hardware photo 1' },
+              { img: '/projects/air-lab/hardware-2.jpeg', alt: 'Drone hardware photo 2' },
             ],
           },
           'I spent 3 weeks at the end of the summer testing the electronics, the ESP32 wireless communication, the serial port connectivity, the ESC calibration, the startup code, and everything else in the system to find what wasn’t working. Debugging piece after piece that didn’t work really improved my fluency with the drone and the code. Not only did I feel more knowledgeable, but I found many ways to improve the system along the way. Ultimately, there were a few bugs in the code around pin assignments, and the PID control file needed some tweaking, but it worked and I was finally able to move on with the rest of my research. This process, although it was just debugging, has been a rewarding experience and helped me grow as an engineer in ways that building something from scratch might not have.',
