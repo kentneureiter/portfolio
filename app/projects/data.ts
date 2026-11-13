@@ -35,7 +35,7 @@ export type Project = {
   stack: (string | StackGroup)[] // plain chips, or grouped rows like { group: 'Backend', items: [...] }
   overview: string[] // paragraphs
   resume?: string[] // resume bullets for this project
-  demo?: { youtube?: string; url?: string; label?: string; caption?: string } // YouTube embed and/or a live link
+  demo?: { youtube?: string; pdf?: string; url?: string; label?: string; caption?: string } // YouTube embed, embedded PDF (e.g. slides) and/or a live link
   sections?: { heading: string; blocks: Block[] }[] // long-form writing
   contributions?: string[] // "What I did"
   challenges?: Challenge[]
@@ -193,27 +193,43 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: 'raiseit',
-    title: 'Raiseit',
+    title: 'RaiseIt',
     tagline: 'Computer vision that spots raised hands so no question in lecture goes unseen.',
-    role: 'Solo project',
-    when: 'TODO: semester / year',
-    stack: ['Python', 'YOLOv8', 'ByteTrack', 'TODO: OpenCV? hardware/camera?'],
+    role: 'Co-creator',
+    when: 'February 2025 – present',
+    status: 'Ongoing',
+    stack: [
+      { group: 'Vision / ML', items: ['YOLOv8n-pose', 'ONNX Runtime', 'TensorRT (in progress)', 'ByteTrack (via supervision)', 'OpenCV', 'NumPy'] },
+      { group: 'Hardware', items: ['Jetson Orin Nano Super', 'Raspberry Pi 5', 'Logitech Brio 4K'] },
+      { group: 'Deployment', items: ['Linux (Ubuntu 24.04 / JetPack)', 'systemd', 'Python venv'] },
+    ],
     overview: [
-      'After a frustrating participation grade, I set out to build a system that makes raised hands in a lecture hall impossible to miss, giving students better visibility for their questions and instructors a clearer view of the room.',
-      'TODO: one or two sentences on how it works end to end (camera → detection → tracking → alert/output).',
+      'RaiseIt is a computer vision system that detects when students raise their hands in large lecture halls and shows the professor who raised their hand first. It runs pose estimation on a camera feed and is built to run on a small edge device in the classroom. I started it with a friend, and I’m now working toward pitching it to Lehigh for use across multiple classrooms.',
     ],
-    contributions: [
-      'TODO: how you used YOLOv8 (pretrained pose/detection model? fine-tuned on your own data?)',
-      'TODO: how ByteTrack keeps a consistent ID per student across frames',
-      'TODO: how the result is surfaced to the instructor',
+    resume: [
+      'Built a computer vision system that detects raised hands in lecture halls using YOLOv8-pose and ByteTrack to track students across frames',
+      'Combined a two-model pipeline (YOLO + MediaPipe) into a single pose model and fixed a resizing bug that was distorting students’ proportions',
+      'Moved inference from PyTorch to ONNX Runtime for edge deployment on a Raspberry Pi 5 and Jetson Orin Nano',
     ],
-    challenges: [
+    demo: {
+      pdf: '/projects/raiseit/slides.pdf',
+      label: 'Open the slides',
+    },
+    sections: [
       {
-        problem: 'TODO: a real problem you hit (e.g. false positives from stretching, small/occluded hands in the back rows, frame rate)',
-        solution: 'TODO: what you changed and why it worked',
+        heading: 'Ramble',
+        blocks: [
+          'RaiseIt started as an idea a friend and I had. In a big lecture hall, the professor can’t see everyone, and students in the back row usually get missed when they raise their hand. We worked on it on and off for a while and had a pitch deck and a few scripts, but nothing that worked in a real classroom.',
+          'When I went back through the repo, there were six scripts that were mostly different versions of the same idea. They used YOLO to find each person, cropped them out, and ran MediaPipe pose on the crop to check if a wrist was above a shoulder. The best one also had a simple state machine (idle, raising, confirmed, countdown) so someone stretching for a second wouldn’t count. Instead of patching everything, I rebuilt it myself so I actually understood it. I reorganized the repo, rewrote the detection logic as its own class, and added a queue that color-codes students by the order they raised their hands (green, yellow, then red).',
+          { img: '/projects/raiseit/early-pipeline.png', alt: 'Early pipeline / codebase map' },
+          'Over the summer, MediaPipe removed the part of the library we were using, so I switched to YOLOv8n-pose, which finds people and their keypoints in one model instead of two. While doing this, I found a bug where we were stretching every crop into a square, which threw off people’s proportions and the wrist and shoulder math. I fixed it by padding the image instead (letterboxing). I also replaced our old tracker, which just checked if someone moved less than 50 pixels between frames, with ByteTrack, which works much better in a crowded room.',
+          'I also decided to move the model from PyTorch to ONNX Runtime so it could run on smaller hardware. This meant writing the preprocessing and reading the model’s raw output directly, which taught me a lot about what the model is actually returning.',
+          { img: '/projects/raiseit/keypoint-output.png', alt: 'Keypoint output / detection example' },
+          'Getting it running on hardware took a lot of debugging. On the Raspberry Pi 5, none of the ML libraries would install, and it turned out the OS was running in 32-bit mode on a 64-bit processor. After reflashing it, I moved to a Jetson Orin Nano, since its GPU makes a big difference for real-time detection. The GPU version of ONNX Runtime didn’t support my CUDA version yet, so I switched to TensorRT, which optimizes the model for the Jetson.',
+          'The main thing I’m working on now is resolution. The camera records in 4K, but the model only sees a 640×640 image, so students in the back row end up about 40 pixels tall.',
+        ],
       },
     ],
-    outcome: ['TODO: accuracy / FPS / where it was tested / what you would do next'],
     links: [],
   },
   {

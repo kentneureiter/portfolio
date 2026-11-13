@@ -186,9 +186,21 @@ export default async function ProjectPage({ params }: Props) {
               />
             </div>
           )}
+          {project.demo.pdf && (
+            <>
+              {publicFileExists(project.demo.pdf) ? (
+                <iframe src={project.demo.pdf} title={`${project.title} slides`} className={styles.pdf} />
+              ) : (
+                <div className={styles.missing}>Add PDF: public{project.demo.pdf}</div>
+              )}
+              <a href={project.demo.pdf} target="_blank" rel="noreferrer" className={styles.demoLink}>
+                {project.demo.label ?? 'Open PDF'} ↗
+              </a>
+            </>
+          )}
           {project.demo.url && (
             <a href={project.demo.url} target="_blank" rel="noreferrer" className={styles.demoLink}>
-              {project.demo.label ?? project.demo.url} ↗
+              {(!project.demo.pdf && project.demo.label) || project.demo.url} ↗
             </a>
           )}
           {project.demo.caption && <p className={styles.videoCaption}><T>{project.demo.caption}</T></p>}
